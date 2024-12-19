@@ -1,0 +1,22 @@
+<!-- filepath: /f:/Website/my-portfolio/_includes/header.html -->
+<header class="site-header" role="banner">
+    <div class="wrapper">
+      <a class="site-title" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+      <nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M1,1 17,1" />
+              <path d="M1,7 17,7" />
+              <path d="M1,14 17,14" />
+            </svg>
+          </span>
+        </label>
+        <div class="trigger">
+          <a class="page-link" href="{{ '/about/' | relative_url }}">About</a>
+          <a class="page-link" href="{{ '/projects/' | relative_url }}">Projects</a>
+        </div>
+      </nav>
+    </div>
+  </header>
