@@ -1,0 +1,284 @@
+// filepath: /f:/Website/my-portfolio/_sass/minima/custom-styles.scss
+
+
+/**
+ * Wrapper
+ */
+ .wrapper-two {
+  max-width: calc(#{$content-width} - (#{$spacing-unit}));
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: $spacing-unit * .5;
+  padding-left: $spacing-unit * .5;
+  @extend %clearfix;
+
+  @media screen and (min-width: $on-large) {
+    max-width: calc(#{$content-width} - (#{$spacing-unit} * 2));
+    padding-right: $spacing-unit;
+    padding-left: $spacing-unit;
+  }
+}
+
+
+/**
+ * Portfolio
+ */
+ .portfolio-tags {
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: 5vh;
+  
+    @media screen and (min-width: $on-large) {
+      margin-left: 5vw;
+      margin-right: 5vw;
+    }
+  
+    a {
+      display: inline-block;
+      margin: 2px;
+      padding: 0.2rem 0.4rem;
+      border-radius: 2px;
+      -webkit-transition: 0.1s;
+      transition: 0.1s;
+      text-decoration: none;
+      border-style: solid;
+      border-width: thin;
+      border-radius: 4px;
+      border-color: $link-base-color;
+  
+      &:hover {
+        color: $navlink-hover-color;
+      }
+    }
+  
+    .filter-current {
+      cursor: not-allowed;
+      opacity: 0.5;
+      color: $navlink-current-color;
+      pointer-events: none;
+      text-decoration: none;
+      font-style: oblique;
+    }
+  }
+  
+  .portfolio-wrapper {
+    $local-block-size: calc(100vw / 2 - #{$grid-gap} * 2);
+    $local-max-block-size: $portfolio-max-block-size;
+    display: grid;
+    max-width: calc(#{$content-width} - (#{$spacing-unit}));
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+    gap: $grid-gap;
+  
+    @include media-query($on-palm) {
+      width: 90vw;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+  
+      .portfolio-overlay,
+      .portfolio-content,
+      .portfolio-block,
+      .portfolio-front {
+        width: 80vw !important;
+        height: 80vw !important;
+      }
+  
+      .portfolio-excerpt {
+        width: 80vw !important;
+        height: unquote(
+          'calc(min(80vw, #{$local-max-block-size}) * 0.7) !important'
+        );
+      }
+  
+      .portflio-links {
+        top: unquote('min(80vw, #{$local-max-block-size}) !important');
+  
+        i {
+          font-size: 28px !important;
+        }
+      }
+    }
+  
+    .portfolio-l {
+      justify-self: end;
+    }
+  
+    .portfolio-r {
+      justify-self: start;
+    }
+  
+    .portfolio-l,
+    .portfolio-r {
+      @include media-query($on-palm) {
+        justify-self: center;
+      }
+    }
+  
+    .portfolio-hidden {
+      display: none;
+      visibility: hidden;
+      width: 0;
+      height: 0;
+    }
+  
+    .portfolio-block {
+      position: relative;
+      overflow: hidden;
+      background-color: $sol-base03;
+      width: $local-block-size;
+      height: $local-block-size;
+      max-width: $local-max-block-size;
+      max-height: $local-max-block-size;
+
+      &:hover {
+        .portfolio-front {
+          scale: 1.1;
+          z-index: 1;
+        }
+  
+        .portfolio-overlay {
+          z-index: 2;
+          opacity: 1;
+        }
+  
+        .portfolio-excerpt {
+          transform: translateY($local-max-block-size);
+          z-index: 3;
+          h3,
+          p {
+            visibility: visible;
+          }
+        }
+  
+        .portflio-links {
+          transform: unquote(
+            'translateY(calc( -1 * min(#{$local-block-size}, #{$local-max-block-size}) / 5))'
+          );
+          z-index: 5;
+        }
+  
+        @include media-query($on-palm) {
+          .portflio-links {
+            transform: unquote(
+              'translateY(calc( -1 * min(80vw, #{$portfolio-max-block-size}) / 5)) !important'
+            );
+          }
+        }
+      }
+  
+      .portfolio-front {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-position: center !important;
+        background-size: cover;
+        width: $local-block-size;
+        height: $local-block-size;
+        max-width: $local-max-block-size;
+        max-height: $local-max-block-size;
+        z-index: 2;
+        @include easeLinks;
+      }
+  
+      .portfolio-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: $local-block-size;
+        height: $local-block-size;
+        max-width: $local-max-block-size;
+        max-height: $local-max-block-size;
+        background-color: rgba(#ffffff, 0.65);
+        opacity: 0;
+        z-index: 1;
+        @include easeLinks;
+      }
+  
+      .portfolio-excerpt {
+        position: absolute;
+        top: -$local-max-block-size;
+        left: 0;
+        width: $local-block-size;
+        max-width: $local-max-block-size;
+        height: unquote(
+          'calc(min(#{$local-block-size}, #{$local-max-block-size}) * 0.7)'
+        );
+        // overflow: hidden;
+        transform-origin: top;
+        color: $sol-base03;
+        z-index: 1;
+        @include easeLinks;
+  
+        h3 {
+          @include relative-font-size(1.375);
+  
+          /**
+           * If heading should be single line, uncomment the three following lines to ensure
+           * truncating and addition of wllipsis
+           */
+          // white-space: nowrap;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+          margin: 0px $spacing-unit / 2;
+          padding: 0px;
+          visibility: hidden;
+        }
+  
+        p {
+          // @include multiLineEllipsis($lineHeight: $small-font-size, $lineCount: 3, $bgColor: white);
+  
+          margin: 0px;
+          padding: $spacing-unit / 2;
+          font-size: $small-font-size;
+          // white-space: pre-line;
+          text-align: justify;
+          visibility: hidden;
+        }
+      }
+  
+      .portflio-links {
+        position: absolute;
+        top: unquote('min(#{$local-block-size}, #{$local-max-block-size})');
+        left: 0;
+        transform-origin: bottom;
+        width: 100%;
+        text-align: center;
+        z-index: -1;
+        @include easeLinks;
+  
+        i {
+          font-size: 36px;
+        }
+  
+        a:hover {
+          text-decoration: none;
+        }
+      }
+    }
+
+    .limited-hover {
+      // pointer-events: none;
+      
+      .portfolio-overlay {
+        z-index: 2;
+        opacity: 0.25;
+      }
+
+      .portfolio-excerpt {
+        transform: translateY($local-max-block-size);
+        z-index: 3;
+        h3,
+        p {
+          visibility: visible;
+        }
+      }
+    }
+  }
+  
+  .portfolio-modal {
+    @extend %modal;
+  
+    background-color: rgba($border-color-02, 0.65);
+  }
+
+// -----------------------------------------------------------------------------------

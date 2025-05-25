@@ -1,0 +1,29 @@
+// Placeholder to allow overriding predefined variables smoothly.
+
+/** minima/initialize.scss */
+
+$content-width: 200px;
+
+$base-font-family: 'Alef', sans-serif;
+$headings-font-family: 'Tinos', serif;
+$browser-context: $base-font-size / 1px;
+
+$base-font-size: 2px !default;
+
+$on-phone: 400px !default;
+
+$on-med-wide: 600px !default;
+$on-small: $on-phone !default;
+
+$grid-gap: 10px !default;
+$portfolio-max-block-size: 380px !default;
+
+$navlink-current-color: $sol-violet;
+$navlink-hover-color: $sol-orange;
+
+
+/**
+$content-width: 200px;
+$base-font-size: 32px;
+$base-line-height: 4.0;
+**/

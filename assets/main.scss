@@ -1,0 +1,618 @@
+---
+# Only the main Sass file needs front matter (the dashes are enough)
+---
+
+// imports default styles
+@import "minima";
+
+
+
+@font-face {
+  font-family: 'Merriweather';
+  src: url('./fonts/Merriweather/Merriweather-Light.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'MerriweatherBold';
+  src: url('./fonts/Merriweather/Merriweather-Bold.ttf') format('truetype');
+}
+  
+
+////////////////////////////////////////////////
+// custom variables
+////////////////////////////////////////////////
+$shli-blue: #004c97;
+$shli-grey-med: #77788b; // style overrides
+$background-color: #fafafa; // light grey
+
+$background-image: url('./Images/website/tristen-lee-RR5eG0xfiaw-unsplash.jpg');
+//$background-image: url('./Images/website/eberhard-grossgasteiger-9pMBLAYgS_c-unsplash.jpg');
+
+//$background-image: url('./Images/website/saffu-pYaKs30p9zg-unsplash.jpg');
+//$background-image: url('./Images/website/davide-manzini-0u9QYdar6lE-unsplash.jpg');
+//$background-image: url('./Images/website/jonatas-tinoco-UHJs-P2mktk-unsplash.jpg');
+//$background-image: url('./Images/website/nico-bhlr-phyKBS5Z94M-unsplash.jpg');
+//$background-image: url('./Images/website/suganth-cuIPyl8Xd1E-unsplash.jpg');
+
+
+//$spacing-unit: 50px;
+$box-spacing-unit: 100px;
+$box-width: 1500px;
+
+$text-color: #000000; // dark grey
+$content-width: 950px;
+$base-line-height: 2.0;
+$base-font-family: 'Merriweather';//, monospace; //, monospace;
+$base-font-family-bold: 'MerriweatherBold';//, monospace; //, monospace;
+
+
+////////////////////////////////////////////////
+// style overrides
+////////////////////////////////////////////////
+
+
+/**
+ * Wrapper
+ */
+ .wrapper {
+    max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit} * 2));
+    max-width:         calc(#{$content-width} - (#{$spacing-unit} * 2));
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: $spacing-unit;
+    padding-left: $spacing-unit;
+    @extend %clearfix;
+  
+    @include media-query($on-laptop) {
+      max-width: -webkit-calc(#{$content-width} - (#{$spacing-unit}));
+      max-width:         calc(#{$content-width} - (#{$spacing-unit}));
+      padding-right: $spacing-unit * 0.5;
+      padding-left: $spacing-unit * 0.5;
+    }
+  }
+
+  .box-wrapper {
+    max-width: -webkit-calc(#{$box-width} - (#{$box-spacing-unit} * 2));
+    max-width:         calc(#{$box-width} - (#{$box-spacing-unit} * 2));
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: $box-spacing-unit;
+    padding-left: $box-spacing-unit;
+    box-sizing: border-box;
+    @extend %clearfix;
+  
+    @include media-query($on-laptop) {
+      max-width: -webkit-calc(#{$box-width} - (#{$box-spacing-unit}));
+      max-width:         calc(#{$box-width} - (#{$box-spacing-unit}));
+      padding-right: $box-spacing-unit * 0.5;
+      padding-left: $box-spacing-unit * 0.5;
+    }
+  }
+
+
+  body {
+    font: $base-font-weight #{$base-font-size}/#{$base-line-height} $base-font-family;
+    color: $text-color;
+    background-color: $background-color;
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-feature-settings: "kern" 1;
+       -moz-font-feature-settings: "kern" 1;
+         -o-font-feature-settings: "kern" 1;
+            font-feature-settings: "kern" 1;
+    font-kerning: normal;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    position: relative;
+    overflow: auto; /* Ensure the body is scrollable */
+  }
+  
+  /*
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: $background-image;
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-attachment: fixed; 
+    background-position: center; 
+    //filter: blur(1px); 
+    z-index: -1; 
+    pointer-events: none; 
+  }
+  */
+
+  
+  /* Media query to change background behavior based on screen height */
+  /*@media (max-height: 800px) {
+    body {
+      background-attachment: scroll; // Change to scroll when screen height is less than 800px
+    }
+  }
+    */
+
+  .highlight {
+    line-height: 1.5;
+  }
+  
+
+/* Pagination container styles */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* General button styles */
+.btn {
+  position: relative; /* Needed for tooltip positioning */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  min-height: 50px;
+  background-color: #007bff;
+  color: #f8f9fa !important;/* Off-white text for better contrast */
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s, border-color 0.3s;
+
+  &:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+  }
+}
+
+/* Tooltip styles */
+.btn::after {
+  content: attr(data-tooltip); /* Use the custom data attribute */
+  position: absolute;
+  bottom: 100%; /* Position above the button */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+/* Show tooltip on hover */
+.btn:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-5px); /* Slight animation upwards */
+}
+
+
+.reusable-divider {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+
+
+  .small-header-text {
+    display: block;
+    margin: 0;
+    padding-top: 40px;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  hr {
+    border: 1px dotted #333;
+    margin-top: 0;
+    margin-bottom: 20px;
+    width: 100%; /* Optional: To ensure full-width divider */
+  }
+
+  padding-bottom: 40px;
+}
+
+.highlighted-code {
+  background-color: #ffff99; /* Light yellow background */
+  font-weight: bold; /* Bold text */
+  padding: 2px 4px; /* Padding */
+  border-radius: 3px; /* Rounded corners */
+}
+
+//----------------------------------------------------------------------------------
+
+
+/* Styles for the posts container */
+.posts-container {
+  background-color: #f9f9f9; /* Background color for the container */
+  border: 1px solid #ddd; /* Border for the container */
+  border-radius: 0px; /* Rounded corners for the container */
+  padding: 20px; /* Padding inside the container */
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow for the container */
+  margin: 20px auto; /* Center the container horizontally */
+}
+
+.posts-container-title {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Styles for post cards */
+.post-cards {
+  display: flex;
+  flex-wrap: wrap; /* Allow the cards to wrap to the next line */
+  gap: 20px;
+  justify-content: center; /* Center the cards horizontally */
+}
+
+.post-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0px; //8px;
+  overflow: hidden;
+
+  flex: 1 1 calc(50% - 20px); /* Ensure two cards per row, accounting for the gap */
+  max-width: calc(50% - 20px); /* Ensure two cards per row, accounting for the gap */
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+}
+
+
+.post-card-link {
+  text-decoration: none !important; /* Remove underline from the entire link */
+  color: inherit; /* Inherit text color */
+}
+
+.post-card-link:hover .post-card-title {
+  text-decoration: underline; 
+}
+
+
+
+.post-card-image-container {
+  width: 100%;
+  height: 275px; /* Fixed height for the container */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Ensure the image is cut off when it zooms in */
+  margin-top: -20px;
+}
+
+.post-card-image-wrapper {
+  width: 80%; /* Adjust the width as needed */
+  height: 80%; /* Adjust the height as needed */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden; /* Ensure the image is cut off when it zooms in */
+}
+
+.post-card-image {
+  width: 100%; /* Ensure the image spans the width of the wrapper */
+  height: 100%; /* Ensure the image fills the wrapper height */
+  object-fit: cover; /* Maintains aspect ratio while filling the container */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.post-card-image:hover {
+  transform: scale(1.1); /* Slightly zoom in */
+}
+
+.post-card-content {
+  padding: 5px 10px; /* 5px for top and bottom, 10px for left and right */
+}
+
+
+
+//max-width: 100px; /* Adjust as needed */
+//word-break: break-word;
+//text-align: center;
+
+
+.post-card-title {
+  text-decoration: none !important;
+
+  margin-top: 20px;
+  font: $base-font-family-bold;
+  font-size: 1.25em !important;
+  line-height: 1.5;
+  color: #333;
+  font-weight: bold;
+  height: 3em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  
+  
+  
+  //display: inline-block !important;
+  word-break: break-word !important;
+  text-align: center !important; 
+  
+
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%; 
+}
+
+/*
+.post-card-title {
+  margin-top: 20px;
+  font: $base-font-family-bold;
+  font-size: 1.25em !important;
+  line-height: 1.5;
+  color: #333;
+  font-weight: bold;
+  text-align: center !important;
+
+  display: block;
+  max-width: min-content; 
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  
+  margin-left: auto;
+  margin-right: auto;
+
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+  */
+
+
+
+
+
+
+
+.post-card-description {
+  display: block; /* Ensure it's treated as a block element */
+  text-decoration: none !important;
+  color: #333;
+  font-size: 1em;
+  line-height: 2.0;
+  margin: 5px auto;
+  max-width: 80%; /* Adjust width as needed */
+  text-align: justify; /* This forces the text to stretch across the container */
+  hyphens: auto; /* Automatically adds hyphens when text is broken into lines */
+  word-break: break-word; /* Breaks words when necessary */
+  margin-bottom: 20px;
+}
+
+.post-card-link:hover .post-card-description {
+  text-decoration: none !important;
+}
+
+
+
+
+.post-card-excerpt {
+  color: #666;
+  font-size: 0.9em;
+}
+
+//------------------------------------------------------------------------
+
+/* Styles for the post box container */
+.post-box-container {
+  background-color: rgb(255, 255, 255); /* Semi-transparent background color for readability */
+  border: 1px solid #ddd; /* Border for the container */
+  border-radius: 0px; /* Rounded corners for the container */
+  box-sizing: border-box;
+  width: 100%; /* Adjust width to be responsive */
+  //max-width: 1500px; /* Optional: Set a maximum width */
+  padding: 20px; /* Padding inside the container */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Box shadow for the container */
+  margin: 20px auto; /* Center the container horizontally */
+}
+
+// --------------------------------------------------------------------------
+
+.custom-post-title {
+  font-size: 2.5em; /* Example: Change the font size */
+  color: $text-color; /* Example: Change the text color */
+  //text-transform: uppercase; /* Example: Transform text to uppercase */
+  margin-top: 15px; /* Example: Add margin below the title */
+  margin-bottom: 0px; /* Example: Add margin below the title */
+  text-align: center; /* Example: Center align the title */
+  font-weight: bold; /* Example: Make the title bold */
+}
+
+.custom-post-introduction {
+  font: $base-font-weight #{$base-font-size}/#{$base-line-height} $base-font-family;
+  font-style: italic;
+  //color: #004c97; /* Example: Change the text color */
+  //text-transform: uppercase; /* Example: Transform text to uppercase */
+  margin-bottom: 20px; /* Example: Add margin below the title */
+  text-align: center; /* Example: Center align the title */
+  //font-weight: bold; /* Example: Make the title bold */
+}
+
+
+.padded-code-block {
+  padding-top: 40px; /* Adjust the value as needed */
+  padding-bottom: 40px; /* Adjust the value as needed */
+}
+
+.add-spacing {
+  margin-top: 0px;
+  margin-bottom: 75px;
+}
+
+.add-spacing-with-description {
+  margin-top: 0px;
+  margin-bottom: 20px;
+}
+
+.add-small-spacing {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.resize-image {
+  width: 100%; /* Make the image responsive */
+  max-width: var(--max-width, 800px); /* Use CSS variable for max-width with a default value */
+  height: auto; /* Maintain the aspect ratio */
+}
+
+
+
+
+.custom-image-description {
+  font-size: 0.8em; /* Adjust the font size */
+  color: #666; /* Adjust the text color */
+  text-align: center; /* Center align the text */
+  margin-top: 0px; /* Space above the description */
+  margin-bottom: 20px; /* Space below the description */
+}
+
+/*
+.post-meta {
+  text-align: center; 
+  margin-top: 50px; 
+  margin-bottom: 0px;
+}
+*/
+
+.post-meta-centered {
+  text-align: center; 
+  margin-top: 50px; 
+  margin-bottom: 0px;
+}
+
+
+
+// -----------------------------------------------------------------------------------
+
+.post-meta {
+  display: inline-block;
+  margin-right: 10px; /* Space between date and tags */
+}
+
+.post-tags {
+  display: inline-block;
+}
+
+.post-tag {
+  background-color: #eee; /* Background color for the tags */
+  border-radius: 3px; /* Rounded corners for the tags */
+  padding: 2px 5px; /* Padding inside the tags */
+  margin-right: 5px; /* Space between tags */
+  font-size: 0.8em; /* Font size for the tags */
+  color: #333; /* Text color for the tags */
+}
+
+
+
+//---------------------------------------------
+
+.lightbox {
+  display: none; /* Hidden by default */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* Dark overlay */
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.lightbox img {
+  width: auto;
+  height: auto;
+  max-width: 90vw; /* Keep within 90% of the viewport width */
+  max-height: 90vh; /* Keep within 90% of the viewport height */
+  transform: scale(1.5); /* Force enlargement */
+}
+
+
+
+.lightbox.show {
+  display: flex; /* Show when active */
+}
+
+
+.default-image {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow effect */
+}
+
+.post-header-image {
+  margin-top: 0px;
+  margin-bottom: 75px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow effect */
+}
+
+.post-header-image-with-description {
+  margin-top: 0px;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add a shadow effect */
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.video-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+.page-header {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-size: 42px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.page-header-centered {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  font-size: 42px;
+  letter-spacing: -1px;
+  line-height: 1;
+  text-align: center;
+}
+

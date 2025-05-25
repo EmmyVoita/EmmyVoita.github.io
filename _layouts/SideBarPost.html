@@ -1,0 +1,249 @@
+---
+<!--layout: base-->
+layout: portfolio-base
+---
+<link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+<style>
+    /* Sidebar styles */
+    .sidebar {
+        height: 100%;
+        width: 250px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #111;
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    .sidebar a {
+        padding: 10px 15px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        display: block;
+        transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+        color: #f1f1f1;
+    }
+
+    .sidebar .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+
+    .openbtn {
+        font-size: 20px;
+        cursor: pointer;
+        background-color: #111;
+        color: white;
+        padding: 10px 15px;
+        border: none;
+    }
+
+    .openbtn:hover {
+        background-color: #444;
+    }
+
+    #main {
+        transition: margin-left .5s;
+        padding: 16px;
+    }
+
+</style>
+
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    
+    {% for post in site.posts %}
+        <!-- Debugging output -->
+        {% if post.categories contains "CloudAndAtmosphereRendering" %}
+            {% if post.categories contains "main" %}
+                <a href="{{ post.url | relative_url }}" class="medium-text">{{ post.title }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+
+    <hr> <!-- Horizontal line to separate the loops -->
+    
+    {% for post in site.posts | reverse %}
+        {% if post.categories contains "CloudAndAtmosphereRendering" %}
+            {% unless post.categories contains "main" %}
+                <a href="{{ post.url | relative_url }}" class="small-text">{{ post.title }}</a>
+            {% endunless %}
+        {% endif %}
+    {% endfor %}
+</div>
+
+<div id="main">
+    <button class="openbtn" onclick="openNav()">&#9776; Open Sidebar</button>
+    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="post-header">
+            <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+            <p class="post-meta">
+                {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+                <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+                    {{ page.date | date: date_format }}
+                </time>
+                {%- if page.modified_date -%}
+                    ~ 
+                    {%- assign mdate = page.modified_date | date_to_xmlschema -%}
+                    <time class="dt-modified" datetime="{{ mdate }}" itemprop="dateModified">
+                        {{ mdate | date: date_format }}
+                    </time>
+                {%- endif -%}
+                {%- if page.author -%}
+                    • {% for author in page.author %}
+                        <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+                            <span class="p-author h-card" itemprop="name">{{ author }}</span></span>
+                            {%- if forloop.last == false %}, {% endif -%}
+                    {% endfor %}
+                {%- endif -%}
+            </p>
+        </header>
+
+        
+            <div class="post-content e-content" itemprop="articleBody">
+                <div class="wrapper">
+                    {{ content }}
+                </div>
+            </div>
+
+            <div class="pagination">
+                {% if page.previous %}
+                  <a href="{{ page.previous.url }}" class="btn btn-prev" data-tooltip="Previous: {{ page.previous.title }}">
+                    Previous
+                  </a>
+                {% endif %}
+                {% if page.next %}
+                  <a href="{{ page.next.url }}" class="btn btn-next" data-tooltip="Next: {{ page.next.title }}">
+                    Next
+                  </a>
+                {% endif %}
+              </div>
+            
+
+        {%- if site.disqus.shortname -%}
+            {%- include disqus_comments.html -%}
+        {%- endif -%}
+
+        <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+    </article>
+</div>
+
+<script>
+    function openNav() {
+        document.getElementById("mySidebar").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+    }
+</script>
+
+<!-- filepath: /f:/Website/my-portfolio/_layouts/SideBarPost.html -->
+ <!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+    <style>
+        /* Sidebar styles */
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s;
+            padding-top: 60px;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #f1f1f1;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        .openbtn {
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #111;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+        }
+
+        .openbtn:hover {
+            background-color: #444;
+        }
+
+        #main {
+            transition: margin-left .5s;
+            padding: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        {% for post in site.posts %}
+            {% if post.categories contains "CloudAndAtmosphereRendering" %}
+                <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            {% endif %}
+        {% endfor %}
+        
+    </div>
+
+    <div id="main">
+        <button class="openbtn" onclick="openNav()">&#9776; Open Sidebar</button>
+        <h1>{{ site.title }}</h1>
+        <h1>{{ page.title }}</h1>
+        <h3>{{ layout.author }}</h3>
+        <h3>{{ page.author }}</h3>
+        <hr>
+        {{ content }}
+    </div>
+
+    <script>
+        function openNav() {
+            document.getElementById("mySidebar").style.width = "250px";
+            document.getElementById("main").style.marginLeft = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidebar").style.width = "0";
+            document.getElementById("main").style.marginLeft= "0";
+        }
+    </script>
+</body>
+</html>
+-->

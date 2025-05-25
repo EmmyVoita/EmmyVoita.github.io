@@ -1,0 +1,71 @@
+---
+layout: custom-post
+title: "Sprint 1"
+date: 2025-1-18 15:13:15 -0700
+
+categories: jekyll update main
+
+tags: Unity 
+image: 
+description:
+permalink:  /posts/Sprint1
+---
+
+* [Overview](#overview)
+* [Challenges](#challenges)
+* [Resources](#links)
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="overview">Overview</span>
+    <hr>
+</div>
+
+The goal with this project is to expand upon the digital prototype of a Unity game made in CST-410. In that class, we completed a game design document (GDD) and developed a digital prototype for 4-5 weeks. The scope of that game is significant, so I don’t expect that we will have anything close to a finished product by the end of the semester, but my goal is just to learn and strengthen skills. 
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="overview">Project Tasks</span>
+    <hr>
+</div>
+
+From 12/28 - 1/20 I made 12 changesets in PlasticSCM. I didn’t keep track of these tasks in Jira, but I did set up a shared Jira scrum board between myself and Rylan to keep track of tasks going forward.
+
+To briefly go over the tasks I completed from 12/28 - 1/20:
+
+1. Fixed player movement bugs:
+    * Player interaction with slopes
+    * Player momentum when inputting a direction after jumping from a stand still
+2. Gave the player the ability to hold onto edges. 
+    * Enabled players to cling onto edges, allowing them to grip an edge and subsequently execute a jump to access elevated areas that would otherwise be out of reach through standard jumping alone.https://youtu.be/kZJjYdh6huk?t=129
+3. Developed a modular finite state machine (FSM) as a foundation for controlling enemy states. To give an example of what a state would look like, an enemy might possess states for idling and pursuing the player.
+4. Created a basic modular weapon structure to simplify the creation of weapons for various enemies and to increase overall interaction manageability.
+5. Created a basic enemy structure for the same purpose as the weapon structure.
+6. Modified one enemy from the previous semester's base game to utilize the updated systems.
+7. Implemented cell shading
+8. Implemented a system for animating on ones, twos, threes, and fours. 
+
+**Weapon Object Diagram:**
+
+![KalmanFilter_01](/assets/images/Unity3DGame/Sprint_1_01.png){: .center .add-small-spacing}
+
+<p class="custom-image-description">
+A weapon contains multiple attacks, which each may have different attack modifiers to allow for more dynamic weapons. Right now I just have a class called SimpleWeapon which implements the abstract weapon class.
+</p>
+
+**Enemy Object Diagram:**
+
+![KalmanFilter_01](/assets/images/Unity3DGame/Sprint_1_02.png){: .center .add-small-spacing}
+
+<p class="custom-image-description">
+An enemy has an instance of a weapon and a state machine which is required through the IStateMachine interface. The ISwappable interface just provides the dependencies for spawning items that the enemy might drop. 
+</p>
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="challenges">Challenges</span>
+    <hr>
+</div>
+
+I recently took the time to learn about the Unity event system, and I saw that it is a good practice to use a unified communication system, like the event system, that interacts with encapsulated systems. I believe that this might be a challenge, because I'm not sure how exactly to define the communication between the encapsulated systems and the unity event system.
+
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: "en" }}">
+
+  {%- include head.html -%}
+
+  <body>
+
+    {%- include header.html -%}
+
+    <main class="post-content" aria-label="Content">
+      <div class="box-wrapper">
+        <!--<div class="post-box-container"> -->
+          <div class="wrapper">
+            {{ content }}
+          </div>
+        <!-- </div> -->
+      </div>
+    </main>
+
+    {%- include footer.html -%}
+
+    <div id="lightbox" class="lightbox">
+      <img id="lightbox-img" src="" alt="">
+    </div>
+    
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+          const lightbox = document.getElementById("lightbox");
+          const lightboxImg = document.getElementById("lightbox-img");
+      
+          document.querySelectorAll(".clickable-image").forEach(image => {
+              image.addEventListener("click", () => {
+                  lightboxImg.src = image.src;
+      
+                  // Copy rotation if present
+                  lightboxImg.style.transform = image.style.transform || '';
+                  if (image.classList.contains("rotate-180")) {
+                      lightboxImg.style.transform = "rotate(180deg)";
+                  } else {
+                      lightboxImg.style.transform = "";
+                  }
+      
+                  lightbox.classList.add("show");
+              });
+          });
+      
+          lightbox.addEventListener("click", () => {
+              lightbox.classList.remove("show");
+          });
+      });
+      </script>
+
+  </body>
+
+</html>
