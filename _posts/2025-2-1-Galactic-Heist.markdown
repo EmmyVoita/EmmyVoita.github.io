@@ -92,7 +92,7 @@ The creation of the paper prototype for our game played a role in refining the g
 * Each turn, players get 1 attack and 1 movement action:
     * **Movement:** Roll the dice and move that number of spaces. The player can’t move
 diagonally. If a player lands on an orange space, they can warp to the other orange
-space ending their turn.
+space, ending their turn.
     * **Attacking:** The player can attack an enemy if the enemy is on an adjacent space.
 Players attack first. Damage is the sum of the player's roll and attack stat minus the
 enemy's defense. If the result is less than the enemy’s defense, no damage is dealt.
@@ -104,7 +104,7 @@ to the boss stats sheet
 
 [Download/View the Board Game Rules](/assets/PDFs/Paper Prototype Rulesheet.pdf)
 
-Balancing the boss's scaling was crucial to ensuring a good player experience. If the boss grew too strong too quickly, the game felt overly difficult, but if it scaled too slowly, it wasn't challenging. This, along with understanding how to implement dynamic difficulty, were important lessons applicable to creating a digital prototype. 
+Balancing the boss's scaling was crucial to ensuring a good player experience. If the boss grew too strong too quickly, the game felt overly difficult, but if it scaled too slowly, it wasn't challenging. This, along with understanding how to implement dynamic difficulty, was an important lesson applicable to creating a digital prototype. 
 
 <div class="video-container">
     <iframe width="560" height="315" src="https://www.youtube.com/embed/IwqAqFziZxo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -118,15 +118,15 @@ Balancing the boss's scaling was crucial to ensuring a good player experience. I
 Show screenshots, gameplay GIFs, or a short video of the Unity prototype.
 Explain what features were implemented and any challenges faced.
 
-After testing the paper prototype, we created a digital prototype over the course of four sprints. Becuase of limited development time, we focused on implementing core features with basic imlementations. Following the third sprint we conducted playtesting between different teams.
+After testing the paper prototype, we created a digital prototype over the course of four sprints. Because of limited development time, we focused on implementing core features with basic implementations. Following the third sprint we conducted playtesting between different teams.
 
 **Digital Prototype Showcase:**
 
-Loom1: https://www.loom.com/share/3cdec61efb8e45609f054c3d22d38d37
-Loom2: https://www.loom.com/share/9ad56ca60a674c3cbe1807e1a0ea42bf
+* [Loom1](https://www.loom.com/share/3cdec61efb8e45609f054c3d22d38d37)
+* [Loom2](https://www.loom.com/share/9ad56ca60a674c3cbe1807e1a0ea42bf)
 
 
-Unfortunatley some of the intended mechanics, such as the boss functionality, did not work during the playtest. Due to the time constraints, coupled with the nature of our game genre, we implemented a significant number of features the week of playtesting and did not have adequate time to test and debug, which resulted in missing features. Furthermore, following the playtest, we prioritized fixing major bugs and addressing missing features, leaving us with insufficient time to implement player feedback. 
+Unfortunately, some of the intended mechanics, such as the boss functionality, did not work during the playtest. Due to the time constraints, coupled with the nature of our game genre, we implemented a significant number of features during the week of playtesting and did not have adequate time to test and debug, which resulted in missing features. Furthermore, following the playtest, we prioritized fixing major bugs and addressing missing features, leaving us with insufficient time to implement player feedback. 
 
 
 <div class="reusable-divider">
