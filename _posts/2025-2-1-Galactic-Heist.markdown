@@ -4,7 +4,7 @@ title: Galactic Heist<br>Prototype
 date: 2025-01-28 00:00:00 -0700
 originallycompleteddate: 2023-02-05 00:00:00 -0700
 permalink: /posts/galactic-heist-prototype/
-image: /assets/Images/Unity3DGame/Screenshot_DP_01.PNG
+image: /assets/Images/Unity3DGame/Screenshot_DP_01.png
 description: >
   Development process of Galactic Heist, a roguelike platformer,
   from its initial game design document and physical board game prototype
