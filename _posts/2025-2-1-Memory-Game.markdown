@@ -23,7 +23,7 @@ The GIF showcases a single round of the game Garden Recall, where the player bri
 
 * [Overview](#overview)
 * [Game Development Process](#game-development-process)
-* [AI Resarch Process](#ai-research-findings)
+* [AI Research Process](#ai-research-findings)
 * [Project Showcase](#project-showcase)
 
 <div class="reusable-divider">
@@ -50,11 +50,9 @@ I developed _Garden Recall_, a visual memory game that challenges the user to re
 
 **Development Process:**
 
-The class followed an agile methodology, working in two-week sprints to implement core game mechanics while simultaneously conducting research. These sprints concluded with a stand up and sprint restrospective.
-
 The class followed an agile methodology, working in two-week sprints to implement core game mechanics while working with AI assistants. Each sprint ended with a stand-up meeting and a retrospective to assess progress and plan improvements.
 
-We didn't create a full game design doccument for this project. Instead, the game's developmenet started with developing a refining a concept for the game to meet the project requirements using a user persona and then developing a UI Flow diagram. Game development concluded with a playtest, and combining inidivual projects into a single game app.
+We didn't create a full game design document for this project. Instead, the game's development started with developing and refining a concept for the game to meet the project requirements using a user persona and then developing a UI Flow diagram. Game development concluded with a playtest, and combining individual projects into a single game app.
 
 <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450" src="https://embed.figma.com/board/AxyiHiWrTQ8Due62nq1AGO/Garden-Recall-UI?node-id=0-1&embed-host=share" allowfullscreen></iframe>
 
@@ -70,13 +68,13 @@ We didn't create a full game design doccument for this project. Instead, the gam
 
 **DATA COLLECTION METHODS:**
 
-Throughout the project, students had the option to use AI assistance but were required to do so at least four times per sprint. To evaluate overall and indiviual AI performance, the same query was asked to both AI assistants. And while both AI's received the same initial question, follow-up interactions varied, leading to differing response lengths.
+Throughout the project, students had the option to use AI assistance, but were required to do so at least four times per sprint. To evaluate overall and indiviual AI performance, the same query was asked to both AI assistants; while both AIs received the same initial question, follow-up interactions varied, leading to differing response lengths.
 
 To ensure consistency in evaluating AI performance, the class collaboratively developed a Likert scale assessing AI response quality, ranging from 1 (the response was completely unusable) to 5 (exceeded expectations). In addition to rating responses, students documented the date, initial prompt, and notable response characteristics. This data was later analyzed to compare AI effectiveness in software development tasks.
 
 **DATA ANALYSIS PROCEDURES:**
 
-After the project concluded, AI interactions were analyzed based on multiple qualitative factors, which were then sorted and analyzed quantitatively. These factors included code quality, explanation clarity, complexity, time saved, and usage type. AI usage trends were also examined over time, with data collected over 8 sprints (spanning three months) divided into two halves: the first half (Sprint 1-4) and later half (Sprint 5-8) of project development. 
+After the project concluded, AI interactions were analyzed based on multiple qualitative factors, which were then sorted and analyzed quantitatively. These factors included code quality, explanation clarity, complexity, time saved, and usage type. AI usage trends were also examined over time, with data collected over eight sprints (spanning three months) divided into two halves: the first half (Sprint 1-4) and the later half (Sprint 5-8) of project development. 
 
 **RESULTS AND DISCUSSION:**
 

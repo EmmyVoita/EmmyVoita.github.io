@@ -31,7 +31,7 @@ This project is an enhancement of Robin Seibold's screen space outlines implemen
     <hr>
 </div>
 
-Outlines are a commonly used visual effect across many genres of games. They serve various purposes, from enhancing object readability and emphasizing interactable elements to contributing to stylized rendering such as cel shading. There are numerous ways to implement outlines, each with trade-offs in performance, flexibility and visual quality. 
+Outlines are a commonly used visual effect across many genres of games. They serve various purposes, from enhancing object readability and emphasizing interactable elements to contributing to stylized rendering such as cel shading. There are numerous ways to implement outlines, each with trade-offs in performance,  flexibility, and visual quality. 
 
 This project builds upon Robin Seibold's screen space outlines implementation **[3](#RSVideo)** **[4](#RSGithub)**, improving edge detection and incorporating anti-aliasing. Initially, I developed the project using Unity 2022.3.50f1 but encountered limitations with setting multiple render targets, which were essential for implementing a Temporal Anti-Aliasing (TAA) shader. To address these challenges and to learn features in the latest Unity versions, I transitioned to Unity 6.0 to use the Render Graph system.
 
@@ -40,11 +40,11 @@ This project builds upon Robin Seibold's screen space outlines implementation **
     <hr>
 </div>
 
-TAA works by slightly jittering the view frustum each frame to gather more scene information, then blending the current frame with previous frames using a history buffer. I talk more about TAA in [this](/posts/Fixing-Real-Time-Optimizations-For-Volumetric-Rendering/) post. In the first iteration of this project, I attempted to apply TAA solely to the output of the outline pass, but this approach didn't work as expected. The resulting image continued to jitter along the edges of objects. I believe this issue stems from the TAA algorithm **[1](#INSIDE)** I implemented, as it likely requires the full context of the image to properly accumulate data across multiple frames.
+TAA works by slightly jittering the view frustum each frame to gather more scene information and then blending the current frame with previous frames using a history buffer. I talk more about TAA in [this](/posts/Fixing-Real-Time-Optimizations-For-Volumetric-Rendering/) post. In the first iteration of this project, I attempted to apply TAA solely to the output of the outline pass, but this approach didn't work as expected. The resulting image continued to jitter along the edges of objects. I believe this issue stems from the TAA algorithm **[1](#INSIDE)** I implemented, as it likely requires the full context of the image to properly accumulate data across multiple frames.
 
-To implement multiple render targets, I followed Unity's example code from the URP's Render Graph sample package **[2](#URPPackageSamples)**. While this approach works for cases that only use TextureHandle objects for output attachments, it didn’t work in my case, where I needed to pass the output history buffer back to the input. Render Graph does not allow a TextureHandle to be used as both an input and output attachment in the same pass, so I had to copy the data to an intermediate texture.
+To implement multiple render targets, I followed Unity's example code from the URP's Render Graph sample package **[2](#URPPackageSamples)**. While this approach works for cases that only use TextureHandle objects for output attachments, it didn’t work in my case where I needed to pass the output history buffer back to the input. Render Graph does not allow a TextureHandle to be used as both an input and output attachment in the same pass, so I had to copy the data to an intermediate texture.
 
-The issue arose when using the ImportTexture() function with a RenderTexture, as it didn’t generate a valid texture descriptor, resulting in errors when attempting to copy data from the imported texture. Ultimately, I switched to directly creating RTHandles in the SetUp function, as shown below:
+The issue arose when using the _ImportTexture()_ function with a RenderTexture, as it didn’t generate a valid texture descriptor, resulting in errors when attempting to copy data from the imported texture. Ultimately, I switched to directly creating RTHandles in the _SetUp()_ function, as shown below:
 
 
 <div class="padded-code-block">
@@ -180,15 +180,15 @@ static void ExecutePass(PassData data, RasterGraphContext rgContext)
 </div>
 
 
-The outline shader relies on both normal and depth information for edge detection. After jittering the projection matrix, the shader no longer functions correctly when using ShaderGraph nodes for scene depth or normals. Through experimentation with the  UniversalResourceData **[6](#UniversalResourceData)** and RenderDoc, I found that the outline shader works only with the activeDepthBuffer and not with the cameraDepthTexture. I suspect this is because ShaderGraph nodes sample the cameraDepthTexture and cameraNormalTexture, which are written during the pre-passes that occur before the projection matrix is modified. 
+The outline shader relies on both normal and depth information for edge detection. After jittering the projection matrix, the shader no longer functions correctly when using Shader Graph nodes for scene depth or normals. Through experimentation with the  UniversalResourceData **[6](#UniversalResourceData)** and RenderDoc, I found that the outline shader works only with the activeDepthBuffer and not with the _cameraDepthTexture_. I suspect this is because Shader Graph nodes sample the _cameraDepthTexture_ and _cameraNormalTexture_, which are written during the pre-passes that occur before the projection matrix is modified. 
 
-Since there is no activeNormalsBuffer equivalent, I have to execute a DrawRendererList for the objects in the outline layer using a material that outputs view-space normal information. This pass is performed immediately before the outline-drawing pass to ensure the correct normals are captured after the projection matrix is jittered.
+Since there is no activeNormalsBuffer equivalent, I have to execute a _DrawRendererList_ for the objects in the outline layer using a material that outputs view-space normal information. This pass is performed immediately before the outline-drawing pass to ensure the correct normals are captured after the projection matrix is jittered.
 
 This approach works but is not the most performant solution, as it requires an additional draw call for all objects in the outline layers to capture view-space normals. Ideally, the shader responsible for writing to the active depth and color textures could also be extended to output an activeNormalsBuffer, eliminating the need to re-render geometry for the normal pass. However, this would likely require implementing a custom Scriptable Render Pipeline (SRP), which I did not want to do for this project.
 
 
 <div class="reusable-divider">
-    <span class="small-header-text" id="non-maximum-suppression">Non Maximum Suppression</span>
+    <span class="small-header-text" id="non-maximum-suppression">Non-Maximum Suppression</span>
     <hr>
 </div>
 
@@ -267,7 +267,7 @@ To implement NMS, it is necessary to calculate both the gradient magnitude and t
 {% endhighlight %}
 </div>
 
-As shown above, the outline shader uses two Roberts Cross operators on both the depth and normals textures to detect edges that either method alone might miss. Combining these two methods involves calculating a unified gradient magnitude and direction. For the gradient magnitude, I take the maximum value between the two calculations to emphasize the strongest edge. For the gradient direction, I compute a weighted average of the two directions. The resulting combined gradient is then stored in the output texture, with the gradient magnitude written to the red channel and the gradient direction to the green channel.
+As shown above, the outline shader uses the two Roberts Cross operators on both the depth and normals textures to detect edges that either method alone might miss. Combining these two methods involves calculating a unified gradient magnitude and direction. For the gradient magnitude, I take the maximum value between the two calculations to emphasize the strongest edge. For the gradient direction, I compute a weighted average of the two directions. The resulting combined gradient is then stored in the output texture, with the gradient magnitude written to the red channel and the gradient direction to the green channel.
 
 ![outlines_pass_output](/assets/Images/ScreenSpaceOutlines/outlines_pass_output.PNG){: .default-image .clickable-image}
 

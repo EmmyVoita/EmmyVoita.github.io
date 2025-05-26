@@ -19,7 +19,7 @@ Sensors often record noisy data, making it challenging to achieve accurate measu
 
 ![2025-01-2218-58-15-ezgif com-optimize](/assets/videos/KalmanFilter/2025-01-2218-58-15-ezgif.com-optimize.gif){: .post-header-image-with-description .clickable-image} 
 <div class="custom-image-description">
-Noisy car velocity data processed using a Kalman filter.  The x-axis represents time, while the y-axis represents speed. The red line represents the raw, unfiltered velocity data with noise. The green line indicates the true velocity. The blue line shows the Kalman filter's estimated velocity, demonstrating its smoothing effect. 
+Noisy car velocity data processed using a Kalman filter. The x-axis represents time, while the y-axis represents speed. The red line represents the raw, unfiltered velocity data with noise. The green line indicates the true velocity. The blue line shows the Kalman filter's estimated velocity, demonstrating its smoothing effect. 
 </div>
 
 
@@ -64,15 +64,15 @@ The noisy velocity data is then processed by a Kalman filter class, which calcul
     <hr>
 </div>
 
-As explained in the video _Visually Explained: Kalman Filters_ **[1](#VisuallyExplained)** and in the second chapter of _Introduction and Implementations of the Kalman Filter_ **[2](#IntroductiontoKalmanFilter)**, a Kalman filter is an estimation algorithm that combines predictions from a model with noisy observations to continuously estimate the state of a dynamic system. It recursivley updates a set of state estimates based on a combination of the predicted state and the observed measurements. The predictions are weighted based on the uncertainty associated with both the model and the measurements, and the filter continually adjusts these weights based on the latest observations.
+As explained in the video _Visually Explained: Kalman Filters_ **[1](#VisuallyExplained)** and in the second chapter of _Introduction and Implementations of the Kalman Filter_ **[2](#IntroductiontoKalmanFilter)**, a Kalman filter is an estimation algorithm that combines predictions from a model with noisy observations to continuously estimate the state of a dynamic system. It recursively updates a set of state estimates based on a combination of the predicted state and the observed measurements. The predictions are weighted based on the uncertainty associated with both the model and the measurements, and the filter continually adjusts these weights based on the latest observations.
 
 
-**Mathmatical Concepts:**
+**Mathematical Concepts:**
 * **Kalman Gain Matrix:** determines how much of the new measurement information should be used to update the predicted state estimate. It is used to weigh the relative contributions of the predicted state estimate and the observed measurements.
 * **Measurement Noise Matrix:** describes the amount of noise present in the measurements provided by the sensor. The more noise, the less the measurement is used to update the state.
-* **State Vector:** since the only state variable is a vector3 velocity, the state vector would simply be a vector3 that holds the velocity in each direction.
+* **State Vector:** since the only state variable is a _Vector3_ velocity, the state vector would simply be a _Vector3_ that holds the velocity in each direction.
 * **Measurement Matrix:** since the state variable is only velocity, the measurement matrix would be a row vector that maps the velocity to the measurement space.
-* **Measurement Space Matrix:** the set of all possible values that a measurement can take. Since our sensor can measure any range of values, and the only state variable is velocity, the measureMatrix should be [1.0]
+* **Measurement Space Matrix:** the set of all possible values that a measurement can take. Since our sensor can measure any range of values, and the only state variable is velocity, the measurement Matrix should be [1.0]
 
 
 
@@ -116,8 +116,8 @@ public void Update(Vector3 measurement)
                             (covariance * measurementMatrix * measurementMatrix + measurementNoise).Invert();
 
     // State Vector:
-    // Since the only state variable is a vector3 velocity, the state vector
-    // would simply be a vector3 that holds the velocity in each direction.
+    // Since the only state variable is a Vector3 velocity, the state vector
+    // would simply be a Vector3 that holds the velocity in each direction.
 
     // MeasurementMatrix:
     // Since the state variable is only velocity, the measurement matrix would
@@ -128,7 +128,7 @@ public void Update(Vector3 measurement)
     // Since our sensor can measure any range of values, and the only state
     // variable is velocity, the measureMatrix should be [1.0]
 
-    // Therefore the vector3 multiplied by the kalmanGain would be the
+    // Therefore the Vector3 multiplied by the kalmanGain would be the
     // measurement velocity minus the previous state
 
     // [velocity.x]                [state.x]
@@ -160,7 +160,7 @@ Initially, the uncertainty in the state estimate may be high due to limited data
 </div>
 
 
-To simulate a sensor update interval, a timer is updated each frame. If the timer is equal to or exceeds an update variable, the timer is reset and the velocity data is sampled. When the velocity data is sampled, the subsequent calls are made:
+To simulate a sensor update interval, a timer is updated each frame. If the timer is equal to or exceeds the update interval, the timer is reset and the velocity data is sampled. When the velocity data is sampled, the following steps are performed:
 1. Update the Kalman inputs using the velocity data (set the F,B,Q,H,R matrices and control vector) 
 2. Perform the prediction step
 3. Perform the update step with the velocity measurement
@@ -168,7 +168,7 @@ To simulate a sensor update interval, a timer is updated each frame. If the time
 5. Use filtered velocity estimate to update a graph of the velocity over time
 
 
-Pressing the tab key during the play state will display a graph of the velocity over time. The interval on the x axis corresponds to the sensor update interval.
+Pressing the tab key during the play state will display a graph of the velocity over time. The interval on the x-axis corresponds to the sensor update interval.
 - The red line represents the noisy unfiltered velocity. 
 - The green line represents the true velocity.
 - The blue line represents the filtered velocity. 
@@ -186,7 +186,7 @@ Pressing the tab key during the play state will display a graph of the velocity 
 </div>
 
 
-There was one issue that came up during implementation, that being defining a control matrix (B) and control vector to accurately predict the car’s velocity. The issue lies with the complexity of vehicle dynamics models and that the code Unity uses for determining a rigidbody’s velocity is not publicly available. These factors combined resulted in a significant challenge in providing an accurate model for the Kalman filter. Here is the model that I came up with that focuses on accurately predicting linear acceleration. There are still some flaws in the model, which is why the filtered velocity doesn’t always seem to match the real velocity. Perhaps a better model could be created using a machine learning algorithm such as a hidden Markov model.
+One issue during implementation was defining a control matrix (B) and control vector to accurately predict the car’s velocity. The issue lies with the complexity of vehicle dynamics models and the fact that the code Unity uses for determining a rigidbody’s velocity is not publicly available. These factors combined resulted in a significant challenge in providing an accurate model for the Kalman filter. Here is the model that I came up with that focuses on accurately predicting linear acceleration. There are still some flaws in the model, which is why the filtered velocity doesn’t always seem to match the real velocity. Perhaps a better model could be created using a machine learning algorithm, such as a Hidden Markov Model, to better capture the system dynamics.
 
 
 <div class="padded-code-block">

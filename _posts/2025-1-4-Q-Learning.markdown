@@ -19,8 +19,8 @@ The agent follows the optimal policy after training to maximize rewards. The vis
 </div>
 
 
-* [Overview Part1](#overview_p1)
-    * [Mathmatical Concepts](#mathmatical-concepts)
+* [Overview Part 1](#overview_p1)
+    * [Mathematical Concepts](#mathematical-concepts)
     * [Implementation Approach](#implementation-approach)
 * [Overview Part2](#overview_p2)
     * [Q-Learning](#q-learning)
@@ -35,12 +35,12 @@ The agent follows the optimal policy after training to maximize rewards. The vis
 
 Reinforcement learning is a framework for teaching agents to make decisions in complex environments. At the core of this approach is the idea of a Markov Decision Process (MDP), which is a way of describing situations where an agent makes decisions in an environment that’s a mix of chance and control. One of the most well-known algorithms for solving MDPs is Q-Learning, a model-free method that enables agents to learn optimal actions through trial and error, without requiring a full model of the environment. 
 
-This post covers a two-part project. In the first part, I implemented a simulation where an agent navigates a grid-world environment, aiming to reach a goal state while avoiding obstacles. In the grid-world, the agent can move up, down, left, and right. Each move in any direction will inccur a cost, and the objective of the agent is to minimize the total cost while reaching the goal. 
+This post covers a two-part project. In the first part, I implemented a simulation where an agent navigates a grid-world environment, aiming to reach a goal state while avoiding obstacles. In the grid-world, the agent can move up, down, left, and right. Each move incurs a cost, and the objective of the agent is to minimize the total cost while reaching the goal. 
 
-The agent will move using an algorithm that utilizes the Bellman equation, value iteration algorithm, and Markov decision process (MDP). These concepts enable the simulation of the agent’s traversal. A reward system is defined by assigning a cost of -1 per move and a reward of +100 for reaching the goal. The total cost is the sum of these rewards, which is optimized using value iteration.
+The agent will move using an algorithm that utilizes the Bellman equation, value iteration algorithm, and Markov decision process (MDP) framework. These concepts enable simulating the agent’s traversal. A reward system assigns a cost of -1 per move and a reward of +100 for reaching the goal. The total expected return (sum of costs and rewards) is optimized using value iteration.
 
 <div class="reusable-divider">
-    <span class="small-header-text" id="mathmatical-concepts">Mathmatical Concepts</span>
+    <span class="small-header-text" id="mathematical-concepts">Mathematical Concepts</span>
     <hr>
 </div>
 
@@ -69,11 +69,11 @@ By computing the optimal value function using the Bellman equation, we can deter
     <hr>
 </div>
 
-A grid-world environment is created using a custom grid system with sprites, where each cell represents a state in the Markov decision process (MDP) and is labeled with an ID or coordinate. The object's action options (moving up, down, left, or right) on the grid correspond to the actions in the MDP and can be represented by integers.
+The grid-world environment is created using a custom grid system with sprites. Each cell represents a state in the Markov decision process (MDP) and is labeled with an ID or coordinate. The object's action options (moving up, down, left, or right) on the grid correspond to the actions in the MDP and can be represented by integers.
 
-Transition probabilities from one state to another depend on the grid's structure and obstacles, and will be defined using a transition function that takes the current state and action as input, returning the next state and its probability. The reward function determines the immediate reward for each action, and will be defined using a function that takes the current state and action as input and returns the corresponding reward.
+Transition probabilities from one state to another depend on the grid's structure and obstacles. They are defined using a transition function that takes the current state and action as input, returning the next state and its probability. The reward function determines the immediate reward for each action, and will be defined using a function that takes the current state and action as input and returns the corresponding reward.
 
-To implement the value iteration algorithm, an MDP script includes a function to compute the optimal value function and policy for each state in the MDP. The value function will be initialized to 0 and will be updated at each iteration using the Bellman equation. Once the value iteration algorithm converges, the optimal value function can be used to determine the optimal policy for each state in the MDP. Then, we can control an object's movement using the policy. 
+To implement value iteration, the MDP script includes a function that computes the optimal value function and policy for each state. The value function will be initialized to 0 and will be updated at each iteration using the Bellman equation. Once the value iteration algorithm converges, the optimal value function can be used to determine the optimal policy for each state in the MDP. Then, we can control an object's movement using the policy. 
 
 **FlowChart:**
 
@@ -163,14 +163,14 @@ https://medium.com/mlearning-ai/a-crash-course-in-markov-decision-processes-the-
 
 
 <div class="reusable-divider">
-    <span class="small-header-text" id="overview_p2">Part2 Overview</span>
+    <span class="small-header-text" id="overview_p2">Part 2 Overview</span>
     <hr>
 </div>
 
 
-The goal of the second part of this project was to adapt the previous program, which solves an MDP using value iteration, to instead incorporate machine learning techniques. To do so, the following steps would be taken:
+The goal of the second part of this project was to adapt the previous program, which solves an MDP using value iteration, to instead incorporate machine learning techniques. To do so, I followed these steps:
 
-* **Choose a learning algorithm:** Choose a learning algorithm that can learn from the MDP. This may involve selecting a reinforcement learning algorithm, such as Q-learning or SARSA.
+* **Choose a learning algorithm:** This involves selecting a learning algorithm that can learn from the MDP. This may involve selecting a reinforcement learning algorithm, such as Q-learning or SARSA.
 * **Train the model:** Train the model by repeatedly simulating the MDP and updating the policy based on the observed rewards. This involves running the learning algorithm on the MDP until the policy converges.
 * **Tune the parameters:** The parameters of the model, such as the learning rate or discount factor, can be modified to make the agent behave as desired. For example, using a small discount factor will cause the agent’s optimal policy to converge towards immediate rewards. 
 
@@ -180,13 +180,13 @@ The goal of the second part of this project was to adapt the previous program, w
     <hr>
 </div>
 
-Machine Learning algorithms like Q-Learning enable an agent to learn and adapt to an environment without requiring prior knowledge. This capability makes Q-learning widley applicable to real-world scenarioes like games, robotics, and autonomous vehicle navigation.
+Machine learning algorithms like Q-learning enable an agent to learn and adapt to an environment without requiring prior knowledge. This capability makes Q-learning widley applicable to real-world scenarioes like games, robotics, and autonomous vehicle navigation.
 
-Q-learning is a model-free reinforcement learning algorithm that trains an agent in an MDP environment. It is a type of adaptive dynamic programming, which is a category of machine learning algorithms that are used to solve optimization problems in dynamic environments. The agent starts with no prior knowledge of the MDP's transition or reward functions and learns an optimal policy that maximizes the expected cumulative reward over time through exploring the environment. 
+Q-learning is a model-free reinforcement learning algorithm that trains an agent in an MDP environment. It is a type of adaptive dynamic programming, which is a category of machine learning algorithms that are used to solve optimization problems in dynamic environments. The agent starts with no prior knowledge of the MDP's transition or reward functions, and learns an optimal policy that maximizes the expected cumulative reward over time through exploring the environment. 
 
 ![QLearning_02](/assets/Images/QLearning/QLearning_02.PNG){: .default-image .clickable-image}
 
-At each time step, the agent observes the current state of the environment, chooses an action, and receives feedback from the environment in the form of a reward and a new state. Over time, the agent updates its understanding of state-action pairs using the Q-values, which represent the expected cumulative reward of taking a specific action in a given state while following the optimal policy thereafter. The updates rely on the Bellman equation, which calculates the Q-value as the immediate reward plus the discounted maximum Q-value of the following state-action pair. The Q-values are refined interatively through exploration and converge to optimal values. The agent then selects actions based on the Q-values of the current state, following a policy that is greedy with respect to the learned Q-values.
+At each time step, the agent observes the current state of the environment, chooses an action, and receives feedback from the environment in the form of a reward and a new state. Over time, the agent updates its understanding of state-action pairs using the Q-values, which represent the expected cumulative reward of taking a specific action in a given state while following the optimal policy thereafter. The updates rely on the Bellman equation, which calculates the Q-value as the immediate reward plus the discounted maximum Q-value of the following state-action pair. The Q-values are refined iteratively through exploration and converge to optimal values. The agent then selects actions based on the Q-values of the current state, following a policy that is greedy with respect to the learned Q-values.
 
 
 <!--
@@ -226,7 +226,7 @@ The MDP implementation in the fist part of this project uses a predefined transi
 * The agent moves to the next state based on the action, observes the reward and updates the Q-value action-state pair.
 -->
 
-Here is the main loop for interatively refining the Q-values. We let the agent have a lifetime of x amount of moves to represent an episode. With each episode, the agent uses the updated Q-values for action-state pairs from the previous trial to explore the environment. 
+Here is the main loop for interatively refining the Q-values. We let the agent have a lifetime of a given number of moves to simulate an episode. With each episode, the agent uses the updated Q-values for state-action pairs from the previous trial to explore the environment. 
 
 <div class="padded-code-block">
 {% highlight C# %}
@@ -286,7 +286,7 @@ public void QLearning(int numEpisodes, int maxIterations, int getPolicyOnEpisode
 {% endhighlight %}
 </div>    
 
-At each step, the agent selects an action using an ε-greedy strategy. Either the agent explores with probability ε, or exploits by selecting the action with the highest Q-value. The ε property helps the agent to balance between exploration and exploitation, which ensures that the agent discovers better strategies while still using what it has already learned.
+At each step, the agent selects an action using an ε-greedy strategy. Either the agent explores with probability ε, or exploits by selecting the action with the highest Q-value. The ε property helps the agent balance between exploration and exploitation, which ensures that the agent discovers better strategies while still using what it has already learned.
 
 
 <div class="padded-code-block">
@@ -315,7 +315,7 @@ private int ChooseAction(int state)
 {% endhighlight %}
 </div>    
 
-Once an action is chosen, the reward for that state and chosen action is aquired through a lookup in the predefined reward table. A check is also done to ensure the next state is valid.
+Once an action is chosen, the reward for that state and chosen action is acquired through a lookup in the predefined reward table, and a check ensures the next state is valid.
 
 <div class="padded-code-block">
 {% highlight C# %}
@@ -338,7 +338,7 @@ private (int, float) GetNextStateAndReward(int state, int action)
 {% endhighlight %}
 </div>  
 
-To update Q-values, the agent needs to estimate the best possible future reward from a given state. This function retrieves the maximum Q-value, through another lookup, among all available actions for the specified state.
+To update Q-values, the agent needs to estimate the best possible future reward from a given state. This function retrieves the maximum Q-value, via another lookup, among all available actions for the specified state.
 
 <div class="padded-code-block">
 {% highlight C# %}
@@ -364,7 +364,7 @@ private float GetMaxQValue(int state)
 We then set the q value for the current state and action using the previously mentioned function and move to the next state. In my implementation I return the optimal policy every 20th episode by default so that I can better show progression. The opitmal polocy funtion selects the action with the highest Q-value for each state,  The agent then uses the policy table to lookup where to move for its current position. 
 -->
 
-Once we decide that learning is complete, we can get the optimal policy by selecting the action with the highest Q-value for each state. This function returns an array where each index represents a state and its corresponding value is the best action to take.
+Once training is complete, we can get the optimal policy by selecting the action with the highest Q-value for each state. This function returns an array where each index represents a state and its corresponding value is the best action to take.
 
 <div class="padded-code-block">
 {% highlight C# %}
@@ -396,7 +396,7 @@ public int[] GetOptimalPolicy()
 {% endhighlight %}
 </div>  
 
-Then when deciding how to move the agent, the direction from the optimal policy is sampled using the agents current position. You can see how after training the agent always uses the most optimal strategy, which is to move back and forth to the state with the highest reward. 
+Then when deciding how to move the agent, the direction from the optimal policy is sampled using the agent's current position. You can see how after training the agent always uses the optimal strategy, which is to move back and forth to the state with the highest reward. 
 
 ![2025-01-2820-40-41-ezgif com-optimize](/assets/videos/QLearning/2025-01-2820-40-41-ezgif.com-optimize.gif){: .default-image .clickable-image } 
 
@@ -405,9 +405,9 @@ Then when deciding how to move the agent, the direction from the optimal policy 
     <hr>
 </div>
 
-I think it would be interesting to try and implement reinforcement learning to control enemy AI in a game. I don't think it would be practical, because it would be difficult to try and enusre that the AI behaves in predictable or balanced way to ensure a good player experience, but I think it would be a good learning experience. 
+I think it would be interesting to try and implement reinforcement learning to control enemy AI in a game. I don't think it would be practical, because it would be difficult to try and ensure that the AI behaves in a predictable or balanced way to ensure a good player experience, though it might still be a valuable learning experience.
 
-To do this, a 2D world would probably be an ideal starting point, since it would simplify the action space and state representation. Given the need for more structured and predictable behaviour, I imagine that it would be ideal to use a finite state machine to represent the agents different possible actions and states. This would allow for more controlled decision-making, while still enabling some degree of adaptability in enemy behavior that could be trained. For example, using a finite state machine to represent different enemy attacks, and training the agent to know when to use a specific attack in a specific scenario. 
+To do this, a 2D world would probably be an ideal starting point, since it would simplify the action space and state representation. Given the need for more structured and predictable behavior, I imagine that it would be ideal to use a finite state machine to represent the agent's different possible actions and states. This would allow for more controlled decision-making, while still enabling some degree of adaptability in enemy behavior that could be trained. For example, using a finite state machine to represent different enemy attacks, and training the agent to know when to use a specific attack in a specific scenario. 
 
 
 

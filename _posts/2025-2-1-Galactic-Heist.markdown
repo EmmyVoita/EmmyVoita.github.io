@@ -30,7 +30,7 @@ priority: 1
     <hr>
 </div>
 
-Galactic Heist is a roguelike platformer that challenges players to navigate a long-forgotten virtual vault, using precise movement, fast-paced combat, and puzzle-solving to reach an ancient artifact hidden within. Developed as part of the _Game Design and Gameplay Lecture and Lab_ course at Grand Canyon University, this project involved creating a Game Design Document (GDD), prototyping a physical board game version, and ultimately building a small digital prototype in Unity. 
+Galactic Heist is a roguelike platformer that challenges players to navigate a long-forgotten virtual vault, using precise movement, fast-paced combat and puzzle-solving to reach an ancient artifact hidden within. Developed as part of the _Game Design and Gameplay Lecture and Lab_ course at Grand Canyon University, this project involved creating a Game Design Document (GDD), prototyping a physical board game version, and ultimately building a small digital prototype in Unity. 
 
 
 <div class="reusable-divider">
@@ -86,11 +86,11 @@ The game rewards precise timing in movements, such as chaining abilities or timi
 
 **Overview**
 
-The creation of the paper prototype for our game played a role in refining the gameplay mechanics and ensuring that the core elements of the game worked as intended. The board game verison represented a single level of our game where multiple players would traverse a map aquiring power-ups with the end goal of working together to defeat the boss. The boss would increase in difficulty as time progressed, challenging players to balance exploration and preparation before the encounter becomes too difficult.
+The creation of the paper prototype for our game played a role in refining the gameplay mechanics and ensuring that the core elements of the game worked as intended. The board game version represented a single level of our game where multiple players would traverse a map acquiring power-ups with the end goal of working together to defeat the boss. The boss would increase in difficulty as time progressed, challenging players to balance exploration and preparation before the encounter becomes too difficult.
 
 **How to Play:**
 * Each turn, players get 1 attack and 1 movement action:
-    * **Movement:** Roll the dice and move that number of spaces. The player can’t move
+    * **Movement:** Roll the dice and move that number of spaces. The player cannot move
 diagonally. If a player lands on an orange space, they can warp to the other orange
 space, ending their turn.
     * **Attacking:** The player can attack an enemy if the enemy is on an adjacent space.
@@ -122,11 +122,19 @@ After testing the paper prototype, we created a digital prototype over the cours
 
 **Digital Prototype Showcase:**
 
+<<<<<<< HEAD
 * [Loom1](https://www.loom.com/share/3cdec61efb8e45609f054c3d22d38d37)
 * [Loom2](https://www.loom.com/share/9ad56ca60a674c3cbe1807e1a0ea42bf)
 
 
 Unfortunately, some of the intended mechanics, such as the boss functionality, did not work during the playtest. Due to the time constraints, coupled with the nature of our game genre, we implemented a significant number of features during the week of playtesting and did not have adequate time to test and debug, which resulted in missing features. Furthermore, following the playtest, we prioritized fixing major bugs and addressing missing features, leaving us with insufficient time to implement player feedback. 
+=======
+* [Loom1] (https://www.loom.com/share/3cdec61efb8e45609f054c3d22d38d37)
+* [Loom2] (https://www.loom.com/share/9ad56ca60a674c3cbe1807e1a0ea42bf)
+
+
+Unfortunately, some of the intended mechanics, such as the boss functionality, did not work during the playtest. Due to the time constraints, and given the nature of our game genre, we implemented a significant number of features the week of playtesting and did not have adequate time to test and debug, which resulted in missing features. Furthermore, following the playtest, we prioritized fixing major bugs and addressing missing features, leaving us with insufficient time to implement player feedback. 
+>>>>>>> 89a7c9d (update posts)
 
 
 <div class="reusable-divider">
@@ -142,10 +150,10 @@ Collaborating with a team of diverse skill sets provided valuable insights into 
 
 **Playtest Prioritization:**
 
-The playtest emphasized the importance of prioritizing key gameplay elements. For example, enemy interactions were not as engaging as they should have been, resulting in players primarily running around collecting items. In hindsight, focusing more on refining these interactions rather than implementing less impactful features would have improved the overall gameplay experience and value in conducting a playtest.
+The playtest emphasized the importance of prioritizing key gameplay elements. For example, enemy interactions were not as engaging as they should have been, resulting in players primarily running around collecting items. In hindsight, focusing more on refining these interactions rather than implementing less impactful features would have improved the overall gameplay experience and value of conducting a playtest.
 
 **Task Tracking Improvement:**
 
 Our approach to task tracking and prioritization could have been more structured. While frequent check-ins with team members were helpful, relying more on the project backlog and regularly discussing priorities as a team would have led to better organization.
 
-I continued working on this project the following year as part of a senior project class, though I plan to modify the game's story. While I haven’t made enough progress to justify a second playtest yet, I’ve provided an update on the project in [this](/posts/FSM-Character-Controller/) post.
+I continued working on this project the following year as part of a senior project class, though I plan to modify the game's story. Although I have not yet made enough progress to justify a second playtest, I’ve provided an update on the project in [this](/posts/FSM-Character-Controller/) post.

@@ -73,7 +73,7 @@ The texture coordinates for parallax mapping are in tangent space. Tangent space
 
 * **Change of Basis Matrix:** A change of basis matrix is a matrix that is used to convert a vector from its representation in one basis to another.
 
-For parallax mapping, the TBN matrix is constructed using the tangent, bitangent, and normal vectors at each vertex. While 3D modeling software like Blender typically exports normal data, tangent and bitangent vectors are not included by default. If not explicitly included when exporting, these vectors must be computed either at runtime or during importing.
+For parallax mapping, the TBN matrix is constructed using the tangent, bitangent, and normal vectors at each vertex; however, 3D modeling software like Blender typically exports normal data, tangent and bitangent vectors are not included by default. If not explicitly included when exporting, these vectors must be computed either at runtime or during importing.
 
 The tangent and bitangent vectors are derived from the texture coordinate and vertex position data. Specifically, the texture coordinate edges of a triangle can be expressed as a linear combination of the tangent and bitangent vectors. This relationship forms a system of linear equations that can be solved using the inverse of the texture coordinate differences.
 
@@ -111,7 +111,7 @@ Through experimentation, I found that flipping the bitangent vector during the c
 
 Parallax mapping can introduce artifacts due to the orientation of texture coordinates across a mesh. Variations in the tangent and bitangent directions, influenced by texture coordinate orientation, often result in inconsistencies that make achieving correct results for all mesh faces challenging. This issue becomes especially difficult to handle with more complex meshes.
 
-Blender provides an option to include tangent and bitangent data when exporting objects as .fbx files, which can simplify the process by eliminating the need to compute these vectors manually. I utilized this in a different version of the project than the one shown here. That method involves importing the mesh using Assimp, which removes the need for a custom vertex array.However, even with the mesh unwrapped using cube projection, a method that should generate accurate tangent and bitangent vectors, the same issue persisted. 
+Blender provides an option to include tangent and bitangent data when exporting objects as .fbx files, which can simplify the process by eliminating the need to compute these vectors manually. I utilized this in a different version of the project than the one shown here. That method involves importing the mesh using Assimp, which removes the need for a custom vertex array. However, even with the mesh unwrapped using cube projection, a method that should generate accurate tangent and bitangent vectors, the same issue persisted. 
 
 Through experimentation, I found that flipping the bitangent vector during the creation of the TBN matrix significantly improved the parallax effect. While not a complete solution, this adjustment reduced visual artifacts and made the effect more reliable.
 
@@ -147,7 +147,7 @@ The following flowchart visualizes how the TBN matrix is computed in the G-buffe
 
 **Implementation**
 
-This G-buffer geometry shader processes triangles by calculating tangent-space basis vectors (tangent, bitangent, and normal) required for parallax mapping and normal mapping. The fragement shader then stores the values in the corresponding output buffer. 
+This G-buffer geometry shader processes triangles by calculating tangent-space basis vectors (tangent, bitangent, and normal) required for parallax mapping and normal mapping. The fragment shader then stores the values in the corresponding output buffer. 
 
 
 <div class="padded-code-block">
@@ -260,7 +260,7 @@ This G-buffer geometry shader processes triangles by calculating tangent-space b
 {% endhighlight %}
 </div>      
 
-When drawing the scene, this fragement shader reconstructs the TBN matrix from G-buffer textures, transforms positions and view vectors into tangent space, and applies parallax mapping to offset texture coordinates based on a displacement map. Using the output texture coordinates from parallax mapping, it samples the normal, albedo, and ambient occlusion data, then performs lighting calculations. 
+When drawing the scene, this fragment shader reconstructs the TBN matrix from G-buffer textures, transforms positions and view vectors into tangent space, and applies parallax mapping to offset texture coordinates based on a displacement map. Using the output texture coordinates from parallax mapping, it samples the normal, albedo, and ambient occlusion data, then performs lighting calculations. 
 
 <div class="padded-code-block">
 {% highlight glsl %}

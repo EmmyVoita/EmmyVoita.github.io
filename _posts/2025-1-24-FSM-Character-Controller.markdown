@@ -30,7 +30,7 @@ Showcases a character controller navigating a test scene, demonstrating movement
 
 Finite state machines (FSMs) are an important tool in game development, offering a structured way to manage complex behaviors. In my 3D game project, FSMs are central to managing character movement, the core mechanic of the game, making the system easier to manage and extend.
 
-As explained in the article by Georges Lteif **[1](#FSMIntroduction)**, a FSM is a mathematical model used to describe the dynamic behaviour of systems through a finite number of states, transitions between these states, and actions associated with these transitions. As discussed in the article _What Is The Difference Between DFA And NFA?_ **[2](#DifferenceDFANFA)**, FSMs can be categorized into two main types: non-deterministic finite automata (NFA) and deterministic finite automata (DFA).
+As explained in the article by Georges Lteif **[1](#FSMIntroduction)**, an FSM is a mathematical model used to describe the dynamic behavior of systems through a finite number of states, transitions between these states, and actions associated with these transitions. As discussed in the article _What Is The Difference Between DFA And NFA?_ **[2](#DifferenceDFANFA)**, FSMs can be categorized into two main types: non-deterministic finite automata (NFA) and deterministic finite automata (DFA).
 
 A NFA allows for the machine to exist in multiple states simultaneously, allowing for multiple possible transitions from a given input. 
 
@@ -44,7 +44,7 @@ A DFA, on the other hand, requires that there is exactly one possible state tran
 
 **The Role of FSMs in Game Development**
 
-As outlined in the video _How to Program in Unity: State Machines Explained_ **[4](#ProgramStateMachine)**, a FSM offers an important solution to manage a game and its components as they become more complex, being a structured and efficent way to manage the behavior and interactions of dynamic elements. 
+As outlined in the video _How to Program in Unity: State Machines Explained_ **[4](#ProgramStateMachine)**, an FSM offers an important solution to manage a game and its components as they become more complex, being a structured and efficent way to manage the behavior and interactions of dynamic elements. 
 
 A state can be thought of as the current condition of an object or system. For example, when designing a character controller, you might break down the character's actions into individual states such as:
 
@@ -67,15 +67,15 @@ Similarly, we can break down a weapon's states:
 
 Each state represents a specific behavior of an object or system. For instance, if a player is in the Running state, you might apply a speed multiplier to their movement. Whereas, if the player is in the Falling state, you would instead apply gravity.
 
-* **Managing Complex Behaviors:** The state pattern allows for a clear separation of behaviors within code. By implementing a state pattern, we can eliminate unnecessary dependencies between states, allowing us to modify the behaviour of an object or system for a state without effecting other states, which makes the system easier to manage, extend, and debug. 
+* **Managing Complex Behaviors:** The state pattern allows for a clear separation of behaviors within code. By implementing a state pattern, we can eliminate unnecessary dependencies between states, allowing us to modify the behavior of an object or system for a state without affecting other states, which makes the system easier to manage, extend, and debug. 
 
 * **Efficiency and Performance:** Without FSMs, managing states would require numerous conditionals checked repeatedly even when irrelevant. FSMs improve this by focusing only on the current state and its specific logic, which reduces unnecessary checks. For example, if we wanted to determine whether the player should walk, we no longer need to manually check whether the player is not falling or in any other state that prevents walking.
 
-In the context of game design, it's important to organize states in a way that creates a minimal DFA, where we ensure that each state transition is clearly defined and does not lead to ambiguity. Structuring the states in this way helps to reduce unnecessary complexity. To give a practical example of minimizing a DFA, I originally came up with three states when implementing a slide mechanic for my player. At this time, I was also considering how to make sure that the players movement worked for slopes, and I wanted to implement some custom logic for when the player would slide down a slope. 
+In the context of game design, it's important to organize states in a way that creates a minimal DFA, where we ensure that each state transition is clearly defined and does not lead to ambiguity. Structuring the states in this way helps to reduce unnecessary complexity. To give a practical example of minimizing a DFA, I originally came up with three states when implementing a slide mechanic for my player. At this time, I was also considering how to make sure that the player's movement worked for slopes, and I wanted to implement some custom logic for when the player would slide down a slope. 
 
-* Sliding : handle basic sliding logic
-* SlidingOnSlope : handle sliding logic when the player is on a slope
-* SlidingOnSlopeGravityAccel : extend the players slide so long as they are oriented down the slope. 
+* **Sliding:** handle basic sliding logic
+* **SlidingOnSlope:** handle sliding logic when the player is on a slope
+* **SlidingOnSlopeGravityAccel:** extend the player's slide so long as they are oriented down the slope. 
 
 While these states made sense at first, this approach quickly became unmanageable as following the same logic, I would need equivalent states for other movement types, such as running, walking, and jumping:
 
@@ -83,9 +83,9 @@ While these states made sense at first, this approach quickly became unmanageabl
 * WalkingOnSlope
 * JumpingOnSlope
 
-These additional states would introduce redundancy as they would share essentially the same transitions and only slightly differ in their behaviour (calculating the same movement just for a slope). This demonstrates how quickly the number of states can grow to represent every possible scenario.
+These additional states would introduce redundancy as they would share essentially the same transitions and only slightly differ in their behavior (calculating the same movement just for a slope). This demonstrates how quickly the number of states can grow to represent every possible scenario.
 
-Instead of defining individual states for each situation, I refactored the design by abstracting the "OnSlope" behaviour into a seperate system. Thereby, separating the logic for slopes from the movement states and treating it as its own concern. This resulted in a secondary FSM for processing and applying the players movement. For my current implementation, I need two states to represent this FSM: Normal and OnSlope.
+Instead of defining individual states for each situation, I refactored the design by abstracting the "OnSlope" behavior into a  separate system. Thereby, separating the logic for slopes from the movement states and treating it as its own concern. This resulted in a secondary FSM for processing and applying the player's movement. For my current implementation, I need two states to represent this FSM: Normal and OnSlope.
 
 <!--
  Since I only have two states, I did not necessarily need to implement a full state pattern, which is why I just use a conditional. However, if I had more complex scenario, I could extend this approach by introducing a second FSM specifically for handling movement calculations.
@@ -96,11 +96,11 @@ Instead of defining individual states for each situation, I refactored the desig
     <hr>
 </div>
 
-To implement a FSM to control my character's movement actions, the main class _FSMPlayer_ is passed around to each state. This is part of the "Context" that is described in the aforemention video **[3](#ProgramStateMachine)**. To represent each state in a way that is enhances scalability, I also created an abstract class as a framework for different states. To implement automatically handling state transitions, I created a _StateTransition_ class that contains all of the data needed for evaluating transition conditions, and a _PlayerStateCondition_ which serves as a framework for defining and updating dynamic data which the transition depends on (e.g., grounded check).
+To implement an FSM to control my character's movement actions, the main class _FSMPlayer_ is passed around to each state. This is part of the "Context" that is described in the aforementioned video **[3](#ProgramStateMachine)**. To represent each state in a way that enhances scalability, I also created an abstract class as a framework for different states. To implement automatic handling of state transitions, I created a _StateTransition_ class that contains all of the data needed for evaluating transition conditions, and a _PlayerStateCondition_ which serves as a framework for defining and updating dynamic data which the transition depends on (e.g., grounded check).
 
-In the _PlayerState_ class's _OnUpdate_ function, I call all dependency conditions (e.g., grounded check) to ensure they contain the most up-to-date information before the _OnFixedUpdate_ function is called. Then, I run any logic in the overridable _Execute_ function. The _OnFixedUpdate_ function loops through each transition condition to determine whether a state change should occur. If no transition happens, the overridable _FixedExecute_ function is called. 
+In the _PlayerState_ class's _OnUpdate_ function, I call all dependency conditions (e.g., the grounded check) to ensure they contain the most up-to-date information before the _OnFixedUpdate_ function is called. Then, I run any logic in the overrideable _Execute_ function. The _OnFixedUpdate_ function loops through each transition condition to determine whether a state change should occur. If no transition occurs, the overridable _FixedExecute_ function is called. 
 
-I found that transition conditions must be evaluated in FixedUpdate to ensure that physics-based calculations in FixedExecute, such as jumping and falling mechanics, remain frame rate independent.
+I found that transition conditions must be evaluated in FixedUpdate to ensure that physics-based calculations in FixedExecute, such as jumping and falling mechanics, remain frame-rate independent.
 
 
 <!-- 
@@ -321,7 +321,7 @@ namespace PlayerStates
 {% endhighlight %}
 </div>
 
-The following class defines the main controller for the FSM. It declares each player state and player state condition, then calls the current state's _OnUpdate_ and _OnFixedUpdate_ within the update loop. After updating the player's current movement state FSM, it applies the same update and fixed update process to the player movement processing FSM, which handles moving the character controller.
+The following class defines the main controller for the FSM. It declares each player state and player state condition, then calls the current state's _OnUpdate_ and _OnFixedUpdate_ within the update loop. After updating the player's current movement state FSM, the class applies the same update and fixed update process to the player movement processing FSM, which handles moving the character controller.
 
 <div class="padded-code-block">
 {% highlight C# %}

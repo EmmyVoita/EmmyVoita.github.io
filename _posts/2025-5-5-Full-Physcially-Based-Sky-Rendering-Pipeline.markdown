@@ -38,7 +38,7 @@ One-sided holdouts are commonly used for volumetrics, where surfaces are rendere
 
 For performance reasons, atmosphere scattering and transmittance are often precomputed and stored in multiple LUTs. This adds an extra dimensionality to compositing, as multiple texture lookups are required to have the geometry and volumetric image be consistent with the surrounding atmosphere, such as with rendering the aerial perspective effects mentioned in _A Scalable and Production Ready Sky and Atmosphere Rendering Technique_ **[1](#ProductionReadySkyandAtmosphere)**. 
 
-Ultimately, I designed a multi-part compositing approach that utilizes a slightly modified version of Scrawk's Unity port of Eric Bruneton's precomputed atmospheric scattering **[2](#BruetonAtmosphericScattering)**,**[3](#ScrawksBruetonPort)**. This approach includes geometric holdout masking through depth information that is upsampled using TAAU and calculating and modifying per-pixel atmospheric scattering to maintain visual consistency across different lighting conditions, including transitions from day to night. The following flowchart outlines the structure of my pipeline:
+Ultimately, I designed a multi-part compositing approach that utilizes a slightly modified version of Scrawk's Unity port of Eric Bruneton's precomputed atmospheric scattering **[2](#BrunetonAtmosphericScattering)**,**[3](#ScrawksBrunetonPort)**. This approach includes geometric holdout masking through depth information that is upsampled using TAAU and calculating and modifying per-pixel atmospheric scattering to maintain visual consistency across different lighting conditions, including transitions from day to night. The following flowchart outlines the structure of my pipeline:
 
 <div style="text-align: center;">
   <strong>Pipeline Flowchart</strong>
@@ -66,11 +66,11 @@ The cloud color buffer is structured in the following way:
 * **R Channel:** scattering 
 * **G Channel:** ambient contribution 
 * **B Channel:** estimated cloud depth
-* **A Chennel:** transmittance 
+* **A Channel:** transmittance 
 
 **The Ideal Solution and Constraints:**
 
-Ideally, we would like to use a float3 to represent scattering and transmittance so that we can achieve a more accurate and flexible simulation of wavelength-dependent effects by specifying a scattering coefficient and extinction coefficient. However, we need to output both the scattering and transmittance in the output buffer, since both are required later to composite with the scene. This means we already have to sacrifice some information to represent scattering and transmittance this way. We could solve the problem using two output buffers, but then we would have to run both through TAAU, which isn't really feasible for performance reasons.
+Ideally, we would like to use a _float3_ to represent scattering and transmittance so that we can achieve a more accurate and flexible simulation of wavelength-dependent effects by specifying a scattering coefficient and extinction coefficient. However, we need to output both the scattering and transmittance in the output buffer, since both are later required for compositing. This means we already have to sacrifice some information to represent scattering and transmittance this way. We could solve the problem using two output buffers, but then we would have to run both through TAAU, which isn't really feasible for performance reasons.
 
 The composite pass requires upsampled depth information to accurately composite the precomputed atmosphere with the TAAU output, since we need the depth information for compositing with multiple radiance sources and for using world position to sample our atmosphere lookups. Without upsampled depth information, we get artifacts on edge pixels due to the downsampled depth buffer.
 
@@ -78,7 +78,7 @@ Trying to upsample the depth buffer separately from the cloud pass's color outpu
 
 **Solution:**
 
-Initially, I tried to keep scattering as a float3 and sacrifice transmittance information by representing it as a float. In order to include depth in the buffer, I used principal component analysis to define a color space for the scattering that could be represented by a float2, which is possible because the base scattering of clouds—excluding atmospheric contribution—does not vary significantly.
+Initially, I tried to keep scattering as a _float3_ and sacrifice transmittance information by representing it as a float. In order to include depth in the buffer, I used Principal Component Analysis to define a color space for the scattering that could be represented by a _float2_, which is possible because the base scattering of clouds—excluding atmospheric contribution—does not vary significantly.
 
 However, I ended up switching to using just a float representation for both scattering and transmittance, thereby sacrificing the ideal solution, because it gives more control in the composite pass for modifying the final scattering color. Since we now have an unused channel, I output a value to control the ambient color influence, which I moved from being applied in the raymarching loop to the composite pass. Below is the output of the composite pass, followed by a breakdown of each individual channel:
 
@@ -360,7 +360,7 @@ Light shaft pass rendered into a 1/8th resolution buffer. A quality setting cont
     <hr>
 </div>
 
-Currently, my implementation uses a slightly modified version of a Unity implementation of Brunetons improved atmospheric scattering which precomputes single scattering, multiple scattering, and transmittance. Opting to preform multiple textures samples to calculate radiance rather than perfroming the extra raymarching of an atmosphere that would otherwise be required.
+Currently, my implementation uses a slightly modified version of a Unity implementation of Brunetons improved atmospheric scattering which precomputes single scattering, multiple scattering, and transmittance. Opting to perform multiple textures samples to calculate radiance rather than performing additional raymarching through the atmosphere that would otherwise be required.
 
 We have 3 layers that we have to blend together: the background atmosphere, the scene, and the clouds. 
 
@@ -394,8 +394,8 @@ The solar irradiance contribution is clearly visible in the blue-circled highlig
 </div>
 
    - This substitution does **not** work for sky irradiance. So instead, the cloud world position is used to approximate the surface normal. 
-   - The rest is of the radiance calculation is essentially the same as the scene radiance. We scale the cloudScattering by the aerial perspective transmittance, etc. 
-   - In addition to aerial perspective scattering, we add the Mie scattering from the atmosphere, modulated by the light shaft mask, to ensure that the mie scattering also effects the cloud color. This helps a bit to get the correct colors during sunrise / sunset.
+   - The rest of the radiance calculation is essentially the same as the scene radiance. We scale the cloudScattering by the aerial perspective transmittance, etc. 
+   - In addition to aerial perspective scattering, we add the Mie scattering from the atmosphere, modulated by the light shaft mask, to ensure that the mie scattering also affects the cloud color. This helps achieve more accurate colors during sunrise / sunset.
 
 
 These layers are then composited back to front. 
@@ -622,7 +622,7 @@ A weather system drives cloud animation by blending between different weather st
 The scheduling parameters are indicated by the red vertical line, and the cloud and weather settings by the cyan vertical line.
 </div>
 
-The weather system uses on a user-defined interval to periodically check whether to transition to a new weather state. Rather than using a structured finite state machine, I simply iterate through all defined weather states in a loop. Then when a new state is selected, I blend between the previous state and the new state over state's transition length using just a lerp between the previous and new state's properties and passing that to the compute shader.
+The weather system uses a user-defined interval to periodically check whether to transition to a new weather state. Rather than using a structured finite state machine, I simply iterate through all defined weather states in a loop. Then when a new state is selected, I blend between the previous state and the new state over state's transition length using a simple lerp between the previous and new state's properties and passing that to the compute shader.
 
 <div class="padded-code-block">
 {% highlight hlsl %}
@@ -743,8 +743,8 @@ Furthermore, there are things that I would like to explore that I feel would imp
 
 
 1. [A Scalable and Production Ready Sky and Atmosphere Rendering Technique](https://sebh.github.io/publications/egsr2020.pdf){: #ProductionReadySkyandAtmosphere}
-2. [Precomputed Atmospheric Scattering: a New Implementation](https://ebruneton.github.io/precomputed_atmospheric_scattering/){: #BruetonAtmosphericScattering}
-3. [Scrawk's Unity port of Brunetons Improved Atmospheric Scattering](https://github.com/Scrawk/Brunetons-Improved-Atmospheric-Scattering/tree/master){: #ScrawksBruetonPort}
+2. [Precomputed Atmospheric Scattering: a New Implementation](https://ebruneton.github.io/precomputed_atmospheric_scattering/){: #BrunetonAtmosphericScattering}
+3. [Scrawk's Unity port of Brunetons Improved Atmospheric Scattering](https://github.com/Scrawk/Brunetons-Improved-Atmospheric-Scattering/tree/master){: #ScrawksBrunetonPort}
 4. [Nubis: Authoring Real-Time Volumetric Cloudscapes with the Decima Engine](https://www.guerrilla-games.com/read/nubis-authoring-real-time-volumetric-cloudscapes-with-the-decima-engine){: #NubisPresentation}
 5. [Temporal Reprojection Anti-Aliasing in INSIDE](https://s3.amazonaws.com/arena-attachments/655504/c5c71c5507f0f8bf344252958254fb7d.pdf?1468341463){: #INSIDE}
 6. [Volumetric Light Scattering as a Post-Process](https://developer.nvidia.com/gpugems/gpugems3/part-ii-light-and-shadows/chapter-13-volumetric-light-scattering-post-process){: #VLSPostProcess}
