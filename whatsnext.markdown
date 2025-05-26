@@ -10,12 +10,13 @@ permalink: /whats-next/
     - Developing a stylized rendering effect using a Difference of Gaussians technique, based on the method outlined in this [video](https://www.youtube.com/watch?v=5EuYKEvugLU).
 
 * **Cloud and Atmosphere Shader**
+* **Learning Unreal Engine**
 
 I've taken a break from the game I'm working on (which I wrote about in [this post](/posts/FSM-Character-Controller/) on the character controller) to focus on my cloud and atmosphere project. When I return to working on the game, I plan to make a post about the procedural animation system I'm developing for both the player and enemies. I’m close to having enough to showcase, but I need to refactor the existing code first.
 
 Also, finishing my Vulkan particle simulation is high on my list of priority for projects to work on. I had to take a break from the project to focus on school, so I have to go back and relearn Vulkan first.
 
-Furthermore, learning Unreal is a high priority, as it's essential in a lot of cases for breaking into the technical art field. I probably want to implement occlusion culling and material instancing for getting into that. 
+
 
 
 
