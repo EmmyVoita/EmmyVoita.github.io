@@ -249,25 +249,47 @@ $base-font-family-bold: 'MerriweatherBold';//, monospace; //, monospace;
   text-align: center;
 }
 
-/* Styles for post cards */
+/*
 .post-cards {
   display: flex;
-  flex-wrap: wrap; /* Allow the cards to wrap to the next line */
+  flex-wrap: wrap; 
   gap: 20px;
-  justify-content: center; /* Center the cards horizontally */
+  justify-content: center; 
+}
+*/
+
+
+.post-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  gap: 20px;
+  justify-content: center; 
 }
 
+/*
 .post-card {
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 0px; //8px;
   overflow: hidden;
 
-  flex: 1 1 calc(50% - 20px); /* Ensure two cards per row, accounting for the gap */
-  max-width: calc(50% - 20px); /* Ensure two cards per row, accounting for the gap */
+  flex: 1 1 calc(50% - 20px); 
+  max-width: calc(50% - 20px); //Ensure two cards per row, accounting for the gap
 
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+}
+  */
+
+.post-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .post-card:hover {
