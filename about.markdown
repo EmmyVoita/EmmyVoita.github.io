@@ -21,9 +21,10 @@ To date, I've accumulated a couple thousand hours in Unity working on personal p
 
 
 
-I'm Emmy Voita, a computer science graduate from Grand Canyon University with an emphasis in game and simulation, and a self-taught technical artist focused on graphics programming and real-time rendering. Though my academic program included limited game development coursework, it helped shape my problem-solving skills and deepened my interest in the field.
+I'm Emmy Voita, a computer science graduate from Grand Canyon University with an emphasis in game and simulation, and a self-taught technical artist focused on graphics programming and real-time rendering. 
 
-My journey into technical art began with early Unity projects, where I inevitably had to learn shaders since game development requires a multidisciplinary skill set. To date, I’ve accumulated a couple thousand hours in Unity through both academic and personal projects. You can find my projects on this site and on [GitHub](https://github.com/EmmyVoita).
+My experience with technical art started with early Unity projects where I had to learn shaders, since game development requires a multidisciplinary skill set. Though my academic program included limited game development coursework, it helped shape my problem-solving skills to learn what I know on my own. To date, I have accumulated a couple thousand hours in Unity through both academic and personal projects. You can find my projects on this site and on my [GitHub](https://github.com/EmmyVoita).
+
 
 <!--
 

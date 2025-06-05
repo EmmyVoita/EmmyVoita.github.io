@@ -20,13 +20,13 @@ And I do try and include all of the resources that I use for projects within my 
 Check out the Contents or Recent Posts in the Navigation bar above to start reading!
 -->
 
-This site serves as both a [Portfolio](/showcase/) showcasing remarkable projects and a blog documenting my progress on personal projects that I find interesting. 
+This site serves as both a [Portfolio](/showcase/) showcasing some of my notable projects and a blog documenting my progress on personal projects that I find interesting.
 
-For projects you can sort by tags on the [All Posts](/all-posts/) page to view related entries, and you can find my resume via the [Resume](/assets/PDFs/resume-emmyvoita.pdf) page in the navigation bar.
+For projects, you can sort by tags on the [All Posts](/all-posts/) page to view related entries, and you can find my resume via the [Resume](/assets/PDFs/resume-emmyvoita.pdf) page in the navigation bar.
 
-Most of the posts will discuss topics at a high level, but I do try and dive into complex subjects in detail. When applicable, I include links to other posts. I also try and include all of the resources I've used for my projects within posts. My resource organization could definitely be better, but I will always try and share the ones that were most helpful for implementing solutions or understanding key concepts. 
+Most of the posts discuss topics at a high level, but if I do explain some subject in detail in a post, I will link those when applicable. I also try to include all of the resources I've used for my projects within posts, or at least the ones that were most helpful for implementing solutions or understanding key concepts.
 
-\- Emmy
+\- Emmy (:
 
 
 
