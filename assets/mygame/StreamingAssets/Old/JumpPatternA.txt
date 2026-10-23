@@ -1,0 +1,17 @@
+time,direction,speed,type
+
+4,right,8,0
+4,left,8,0
+4.25,right,8,0
+4.25,left,8,0
+4.5,right,8,0
+4.5,left,8,0
+4.75,right,8,0
+4.75,left,8,0
+
+4.75,up,6,0
+
+5.0,down,12,0
+5.25,down,12,0
+5.5,down,12,0
+6.0,up,10,0

@@ -1,0 +1,54 @@
+beat,direction,speed,type
+
+# Warmup — basic cardinals
+2,up,8,0
+3,right,8,0
+4,down,8,1
+5,left,8,0
+
+# Diagonal cross burst
+8,up-right,10,0
+8.5,up-left,10,1
+9.5,up-right,12,1
+
+# Box + diagonal finish
+14,up,9,0
+14.5,right,9,0
+15,down,9,1
+15.5,left,9,0
+16.5,left,8,1
+17.5,right,8,0
+18,up,6,0
+
+
+# Spiral spin (clockwise)
+20,up,4,2
+20.5,up-right,10,0
+21,right,10,0
+21.5,down-right,10,0
+22,down,10,0
+22.5,down-left,10,0
+23,left,10,0
+23.5,up-left,10,0
+
+# 2-second delay before reverse spin (4 beats at 120 BPM)
+26.5,up,10,0
+27,up-left,10,0
+27.5,left,10,0
+28,down-left,10,0
+28.5,down,10,2
+29,down-right,10,1
+29.5,right,10,1
+30,up-right,10,1
+
+# Fake calm, then diagonal burst
+34,up,6,0
+35,down,6,0
+36,left,8,0
+37,right,8,0
+
+39,up,6,1
+40.25,down,6,1
+43,left,8,1
+43.75,up,10,0
+44.25,right,8,1

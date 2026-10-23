@@ -1,0 +1,77 @@
+# BPM: 80
+
+# Warmup — opposite flow
+2,arrow,down,8,0
+3,arrow,left,8,0
+4,arrow,up,8,1
+5,arrow,right,8,0
+
+# Diagonal warmup follow-through
+7,arrow,down-right,9,0
+7.5,arrow,up-left,9,0
+8,arrow,down-left,9,0
+8.5,arrow,up-right,9,1
+
+# Split timing pattern (slightly syncopated)
+11,arrow,up,10,0
+11.5,arrow,down,10,1
+12,arrow,left,10,0
+12.5,arrow,right,10,1
+
+# Diamond burst
+14,arrow,up,9,0
+14.25,arrow,up-right,9,0
+14.5,arrow,right,9,0
+14.75,arrow,down-right,9,0
+15,arrow,down,9,0
+15.25,arrow,down-left,9,0
+15.5,arrow,left,9,0
+15.75,arrow,up-left,9,0
+
+# Slow breathing space + false lull
+18,arrow,down,6,0
+19,arrow,down,6,0
+20,arrow,down-left,7,0
+21.5,arrow,up-right,8,2
+
+# Double Spiral (Counter-Clockwise then Clockwise)
+22,arrow,up,10,0
+22.5,arrow,up-left,10,0
+23,arrow,left,10,0
+23.5,arrow,down-left,10,0
+24,arrow,down,10,0
+24.5,arrow,down-right,10,0
+25,arrow,right,10,0
+25.5,arrow,up-right,10,0
+
+# Reverse spiral immediately (faster pace)
+26,arrow,up,12,0
+26.4,arrow,up-right,12,0
+26.8,arrow,right,12,0
+27.2,arrow,down-right,12,0
+27.6,arrow,down,12,1
+28.0,arrow,down-left,12,1
+28.4,arrow,left,12,1
+28.8,arrow,up-left,12,1
+
+# Alternating duos (2-beat zig-zag)
+31,arrow,up,9,0
+31.5,arrow,right,9,1
+32,arrow,down,9,0
+32.5,arrow,left,9,1
+33,arrow,up,9,0
+33.5,arrow,down,9,1
+
+# Rising tension — staggered diagonals
+36,arrow,up-left,10,0
+36.5,arrow,up-right,10,1
+37,arrow,down-left,10,0
+37.5,arrow,down-right,10,1
+
+# Finale — fast criss-cross + diagonal finish
+40,arrow,down-right,12,0
+40.25,arrow,down-right,12,0
+40.5,arrow,down-right,12,0
+
+41,arrow,up-right,12,1
+41.5,arrow,down-left,12,1

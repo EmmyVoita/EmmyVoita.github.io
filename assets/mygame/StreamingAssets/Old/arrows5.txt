@@ -1,0 +1,4 @@
+# BPM: 150
+
+
+100.0,arrow,right,10,normalarrow

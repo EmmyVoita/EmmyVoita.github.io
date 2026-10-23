@@ -1,0 +1,32 @@
+time,direction,speed,type
+# --- Repeated 3 times with 2-beat spacing ---
+
+# Sequence 1
+4.00,right,8,0
+4.00,left,8,0
+4.25,right,8,0
+4.25,left,8,0
+4.50,right,8,0
+4.50,left,8,0
+4.75,right,8,0
+4.75,left,8,0
+
+# Sequence 2 (+2 beats)
+6.00,right,8,0
+6.00,left,8,0
+6.25,right,8,0
+6.25,left,8,0
+6.50,right,8,0
+6.50,left,8,0
+6.75,right,8,0
+6.75,left,8,0
+
+# Sequence 3 (+4 beats)
+8.00,right,8,0
+8.00,left,8,0
+8.25,right,8,0
+8.25,left,8,0
+8.50,right,8,0
+8.50,left,8,0
+8.75,right,8,0
+8.75,left,8,0
