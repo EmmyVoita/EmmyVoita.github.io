@@ -24,6 +24,20 @@
 }
 
 
+.game-embed {
+  width: 100%;
+  max-width: 990px;
+  margin: 0 auto;
+}
+
+.game-embed iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1920 / 1080;
+  height: auto;
+  border: none;
+}
+
 
 .small-header-text {
     font-size: 16px !important; /* Adjust the size as needed */

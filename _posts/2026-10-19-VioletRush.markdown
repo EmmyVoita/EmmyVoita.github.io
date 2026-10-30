@@ -27,22 +27,43 @@ priority: 5
 
 
 <div class="reusable-divider">
+    <span class="small-header-text" id="project-overview">Project Overview</span>
+    <hr>
+</div>
+
+I'm developing Violet Rush, a roguelike rhythm game inspired by Undertale, with an art style inspired by Bee and PuppyCat. 
+* I am a solo developer, responsible for the game's design, art, sound effects, and programming. 
+* The game is built in Unity.
+
+
+<div class="reusable-divider">
     <span class="small-header-text" id="overview">Game Overview</span>
     <hr>
 </div>
 
 A dreamy, cozy arcade game with magical pixel art, Violet Rush is an arcade-style roguelike rhythm game where you catch arrows to the beat while surviving increasingly demanding challenges. No checkpoints. Performance is rewarded. Earn currency by overcoming each stage, purchase upgrades between levels, and discover unique combinations that change how you play.
 
+Fight your way through a series of handcrafted stages, each set to its own song. Every stage is made up of multiple escalating levels that introduce new mechanics and challenges.
+
+Choose from unique abilities that synergize with your upgrades and complement your playstyle. Time their use carefully to overcome difficult encounters.
+
+Performance is rewarded. Earn currency by overcoming each stage, purchase upgrades between levels, and discover unique combinations that change how you play.
+
+
 <div style="text-align: center;">
-<video autoplay muted playsinline loop controls width="480">
-<source src="/assets/videos/VioletRush/TikTok3_02.mp4" type="video/mp4">
-  Your browser does not support embedded video.
-</video>
+  <a href="https://www.instagram.com/reel/Dd-PInNIP4J/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+    <img
+      class="post-card-image-small"
+      src="/assets/images/VioletRush/ChallengeScreenShot_3.png"
+      alt="Watch Violet Rush gameplay video on Instagram"
+      style="width: 100%; max-width: 800px; height: auto;"
+    >
+  </a>
 </div>
 
-<div class="reusable-divider">
-    <span class="small-header-text" id="project-overview">Project Overview</span>
-    <hr>
+<div style="text-align: center;">
+<p></p>
+<p>Watch the video on Instagram ↗</p>
 </div>
 
 <div class="reusable-divider">
@@ -325,7 +346,95 @@ Arrow line is read as: beat number, entry type, arrow direction, arrow speed, ar
 
 The level editor reads each of the events when loading a file; for arrows, we create an editor version that can be simulated by a script controlling the editor's song time.
 
+**Undo**
 
+For each editor action, I create a command that contains methods to execute and undo the action. I use a stack to keep track of these commands, so when the user presses the undo button, the most recent command is popped from the stack and its undo method is called.
+
+<div class="padded-code-block">
+{% highlight csharp %}
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class EditorHistory : MonoBehaviour
+{
+    public static event Action OnUndo;
+    public static EditorHistory Instance { get; private set; }
+
+    private readonly Stack<IEditorCommand> undoStack = new();
+
+
+    public void Execute(IEditorCommand command)
+    {
+        command.Execute();
+
+        undoStack.Push(command);
+    }
+
+    public void Undo()
+    {
+        if (undoStack.Count == 0)
+            return;
+
+        AudioHelpers.PlaySoundEffect(AudioLibrary.Instance.Database.back, Camera.main.transform.position);
+
+        IEditorCommand command = undoStack.Pop();
+
+        command.Undo();
+
+        redoStack.Push(command);
+
+        OnUndo?.Invoke();
+    }
+
+    public void Clear()
+    {
+        undoStack.Clear();
+    }
+
+    private void Update()
+    {
+        bool ctrlHeld = Keyboard.current.leftCtrlKey.isPressed ||
+                        Keyboard.current.rightCtrlKey.isPressed;
+
+        if (ctrlHeld && Keyboard.current.zKey.wasPressedThisFrame)
+        {
+            Undo();
+        }
+    }
+}
+{% endhighlight %}
+</div>
+
+For example, when adding an event, I add the event to `LevelEditorData`, which contains the list of level events. The list contains all of the events loaded from the level file, and whatever we have added during the current editor session. When undoing the action, the command removes the event from the list and refreshes the necessary components to reflect the change.
+
+<div class="padded-code-block">
+{% highlight csharp %}
+using UnityEngine;
+
+public class AddEventCommand : IEditorCommand
+{
+    private LevelEventData data;
+
+    public AddEventCommand(LevelEventData data)
+    {
+        this.data = data;
+    }
+    public void Execute()
+    {
+        LevelEditorData.Instance.AddEvent(data);
+    }
+
+    public void Undo()
+    {
+        LevelEditorData.Instance.RemoveEvent(data);
+        LevelTimelineUI.Instance.BuildTimeline();
+        EditorPlaybackController.Instance.RebuildSimulation();
+    }
+}
+{% endhighlight %}
+</div>
 
 <div class="reusable-divider">
     <span class="small-header-text" id="challenges">Design Challenges & Solutions</span>
@@ -353,13 +462,13 @@ Instead I made the primary success access just how far you make it in the game, 
             </p>
             <ul>
                 <li>
-                Defensive rewards reduce punishment: the player is allowed to make more mistakes with more health. 
+                Defensive rewards reduce punishment as the player is allowed to make more mistakes with more health. 
                 </li>
                 <li>
-                If we reduce punishment before the player shows mastery, then the player isn’t required to master anything. This reduces tension and creates some balance issues by trivializing future challenges.
+                If we reduce punishment before the player shows mastery, then the player isn’t required to master anything, which reduces tension and creates some balance issues by reducing difficulty.
                 </li> 
                 <li>
-                By using conditions like difficulty, performance requirements, or success, we can keep the player feeling like they earned protection rather than just being granted free safety.
+                By using conditions like difficulty, performance requirements, or success, we can keep the player feeling like they earned protection rather than it just being granted for free.
                 </li>
             </ul>
         </div>
@@ -371,19 +480,19 @@ Instead I made the primary success access just how far you make it in the game, 
         <div class="post-card-content">
         <h3 class="post-card-title">Capped</h3>
         <p class="post-box-description">
-        Defensive rewards scale with player skill because skilled players make fewer mistakes, so each unit of defense lasts longer and effectively makes them far tankier than a less skilled player. This fact emphasizes the importance of defensive rewards being capped to avoid trivializing the game.
+        Defensive rewards scale with player skill as skilled players make fewer mistakes, so each unit of defense lasts longer and effectively makes them tankier than a less skilled player. Therefore, defensive rewards need to be capped to avoid trivializing the game.
             </p>
         </div>
     </div>
 </div>
 
 
-<div class="post-boxes">
+<div class="post-boxes" id="convertable">
     <div class="post-box">
         <div class="post-card-content">
         <h3 class="post-card-title">Convertible</h3>
         <p class="post-box-description">
-        It is important for defensive rewards to be convertible since skilled players don’t need defensive rewards which actually hurts the game’s difficulty since defensive rewards scale so well with player skill. To avoid giving the player no reward entirely to avoid this situation, we should instead give highly skilled players an alternative reward to still give them meaningful value.
+        It is important for defensive rewards to be convertible since skilled players are less likley to need need defensive rewards. To avoid giving the player no reward entirely, we should instead give highly skilled players an alternative reward to still give them meaningful value.
             </p>
         </div>
     </div>
@@ -391,7 +500,7 @@ Instead I made the primary success access just how far you make it in the game, 
 
 Now through actual playtesting, I found that the player was coninously struggling to survive, feeling like they didn't have enough healing or ways to avoid damage, or none of the availible cards felt useful. So, while in theory its better to use conditions like difficulty, performance requirements, or success, its still important to present the player with options that provide immediate value, like increasing the duration of shields that prevent damage.
 
-I've also been working on implementing upgrades that focus on benefiting struggling players while providing less value for more skilled players, keeping in mind the reasons above. For excample, one upgrade heals 1 health the first time your health drops below half each level. This provides additional support to players who are struggling to survive, while offering little to no benefit to players who consistently maintain higher health.
+I've also been working on implementing upgrades that focus on benefiting struggling players while providing less value for more skilled players, keeping in mind the reasons above. For example, one upgrade heals 1 health the first time your health drops below half each level. This provides additional support to players who are struggling to survive, while offering little to no benefit to players who consistently maintain higher health.
 
 **Syncing Notes**
 
@@ -417,7 +526,7 @@ protected virtual void Update()
         // AFTER goal → continue to center
         float extraTime = elapsed - _arrivalTime;
 
-        float postTravelDuration = 0.2f; // tweak this
+        float postTravelDuration = 0.2f;
 
         float t = Mathf.Clamp01(extraTime / postTravelDuration);
 
@@ -429,12 +538,17 @@ protected virtual void Update()
 
 protected void SmoothTranslate(Vector3 targetPos)
 {
+    // frame rate independent interpolation
+    // Mathf.Exp(-20f * Time.deltaTime) comes from grabing a function where
+    // we start with dd/dt = -20d where we have a function where speed is proportional to distance.
+    // Then, integrate both sides and end up with e^-20 dt
+
+    // the fraction of the distance remaining
+    float d = Mathf.Exp(-20f * Time.deltaTime);
+
     // Smooth movement toward correct DSP position
-    transform.localPosition = Vector2.Lerp(
-        transform.localPosition,
-        targetPos,
-        1f - Mathf.Exp(-20f * Time.deltaTime)
-    );
+    // // the fraction of the distance to move.
+    transform.localPosition = Vector2.Lerp(transform.localPosition,targetPos,1f - d);
 }
 {% endhighlight %}
 
@@ -462,23 +576,92 @@ In addition, I feel I make more changes than I should between playtests, which i
     <hr>
 </div>
 
+My game is primarily simple pixel art, but I do use full screen effects for menu transitions and retro filters, along with visual effects.
+
+**UI Transitions Demonstration:**
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/-NEbdCTSqSU"
+    title="Violet Rush UI Transition Demonstration"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+This is what early UI and gameplay looked like
+
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/4cn9jdW3psk"
+    title="Violet Rush Early UI & Gameplay"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+I went through several iterations of the UI as I developed new features, gradually refining the visual direction to better match my intended aesthetic. Inspired by _Bee and PuppyCat_, I wanted the interface to feel like something that could exist within its world. This eventually led me to use the 
+[arcade machines within that world](https://www.google.com/search?q=bee+and+puppycat+arcade&rlz=1C1RXQR_enUS1128US1128&oq=bee+and+puppycat+arcade&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yCAgCEAAYFhgeMggIAxAAGBYYHjIICAQQABgWGB4yCAgFEAAYFhgeMg0IBhAAGIYDGIAEGIoFMg0IBxAAGIYDGIAEGIoFMgcICBAAGO8F0gEHNzQ4ajBqOagCBrACAfEFoxDn6UFjBls&sourceid=chrome&source=chrome.ob&ie=UTF-8) 
+as a reference point.
+
+I changed my approach towards trying to design the UI as if it were part of a physical machine, with the center area acting as the arcade screen. I think this helped to establish more of a cohesive identity, which you can see in the newer gamplay footage/demo.
+
+However, this approach makes designing the center UI more difficult due to the limited space because of the physical arcade machine layout. I eventually found a solution utilizing multiple connected panels, which distribute the information across multiple pages that flow together; you can see in the UI Transitions Demonstration video above.
+
+I also iterated on the UI's interaction feedback, using the tilting and movement in response to player input to make the UI feel more responsive. During playtesting I specifically asked for feedback on how responsive the UI felt. I evetually designed a template panel, which I reuse throughout the game to help make development faster and to maintain consistency.
+
+
+
+**Designing Upgrades**
+
+My process for implementing upgrade UI is to try and come up with name ideas that can be represented by a distinct icon, often avoiding ideas that name the upgrade based on the result it produces; otherwise, I end up with a bunch of very similar icons because a multiple upgrades share a similar purpose (for example, upgrades that heal you). So, for many of the upgrades I end up with a name that is more symbolic.
+
+I then will try and come up with a basic design for the icon given the name. Sometimes I have to change the name, because the icon silhoette doesnt work; think designs that end up being like a bulky square or circle. After testing the upgrade to makes sure that it works, I then try and create a more polished icon, unless I just have the extra time. 
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+  <div>
+    <img src="/assets/Images/VioletRush/UnpolishedDesignExample.png" class="default-image clickable-image" />
+  </div>
+
+  <div>
+    <img src="/assets/Images/VioletRush/PolishedDesignExample.png" class="default-image clickable-image" />
+  </div>
+</div>
+
+**Return Policy:** When a shield expires without breaking, gain currency.
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+ <div>
+    <img src="/assets/Images/VioletRush/UnpolishedDesignExample2.png" class="default-image clickable-image" />
+  </div>
+
+  <div>
+    <img src="/assets/Images/VioletRush/PolishedDesignExample2.png" class="default-image clickable-image" />
+  </div>
+</div>
+
+**Deep Pockets:** The first time you would take damage each level, lose currency instead.
+
+
+
 <div class="reusable-divider">
     <span class="small-header-text" id="demo">Demo</span>
     <hr>
 </div>
 
-You can download the files from Dropbox:
+
 
 <iframe 
   src="https://itch.io/embed-upload/19981888?color=333333" 
-  width="100%" 
-  style="aspect-ratio: 1920 / 1100; border: none;"
-  allow="autoplay; fullscreen; pointer-lock" 
+  width="990px"
+  height="700px" 
+  style="aspect-ratio: 1920 / 1080; border: none;"
+  allow="pointer-lock" 
   allowfullscreen>
   <a href="https://emmyvoita.itch.io/violet-rush">Play Violet Rush on itch.io</a>
 </iframe>
 
-https://www.dropbox.com/scl/fi/mab6opvrhhm05igw88z6w/VioletRush_10-10-2026_Playtest_2.zip?rlkey=kge2v8nd1lio8bvsku9i3lc52&st=41w5hr6r&dl=0
-
-
-59HYE6UWyBZuj2f
+Just to note, the visual effects don't work on a web build because they use compute shaders. Also, if the game is laggy, you might have to enable graphics acceleration on your browser. And if the embed doesn't work, you can also download the files from [DropBox](https://www.dropbox.com/scl/fi/mab6opvrhhm05igw88z6w/VioletRush_10-10-2026_Playtest_2.zip?rlkey=kge2v8nd1lio8bvsku9i3lc52&st=41w5hr6r&dl=0).

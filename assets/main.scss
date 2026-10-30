@@ -329,6 +329,17 @@ $base-font-family-bold: 'MerriweatherBold';//, monospace; //, monospace;
   transition: transform 0.3s ease; /* Smooth transition */
 }
 
+.post-card-image-small {
+  width: 100%; /* Ensure the image spans the width of the wrapper */
+  height: 100%; /* Ensure the image fills the wrapper height */
+  object-fit: cover; /* Maintains aspect ratio while filling the container */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+.post-card-image-small:hover {
+  transform: scale(1.025); /* Slightly zoom in */
+}
+
 .post-card-image:hover {
   transform: scale(1.1); /* Slightly zoom in */
 }

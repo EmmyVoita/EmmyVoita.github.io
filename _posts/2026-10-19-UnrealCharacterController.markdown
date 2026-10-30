@@ -1,0 +1,895 @@
+---
+layout: custom-post
+title: Custom Unreal Character
+date: 2026-10-19 00:00:00 -0700
+permalink: /posts/Unreal-Character/
+image: /assets/Images/VolumetricPipeline/ScreenShotCoverPhoto.png
+description: >
+  Custom Unreal Character Controller
+categories: jekyll update main
+tags: [Unity]
+priority: 5
+---
+
+![Gameplay1GIF](/assets/videos/VioletRush/Gameplay1.gif){: .default-image .add-spacing .image-with-shadow} 
+
+* [Game Overview](#overview)
+* [Project Overview](#project-overview)
+* [Core Gameplay](#core-gameplay)
+* [Design Work](#design-work)
+* [Tools](#tools)
+* [Design Challenges & Solutions](#challenges)
+* [Playtesting & Iteration](#playtesting)
+* [Visual Development & Polish](#visuals)
+* [Demo](#demo)
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="project-overview">Project Overview</span>
+    <hr>
+</div>
+
+I have designed my character for making a game that explores themes of struggling with mental health. I don't have a formal GDD for this quite yet, but I do have a ton of notes that could be used to create one. With the general idea being decenting a pit symbolizing a downward spiral, but i put this off because I feel like I really need more experience to be able to execute my vision for it.
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="project-overview">Character Design & Animation Process</span>
+    <hr>
+</div>
+
+I'm not super comfotable with making digital art, but I am more comfortable with making pixel art, so I designed my character in Aesprite, a pixel art drawing software, using references that I had gather for the direction of the character.
+
+
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/RWb75JkEFpk"
+    title="Character Concept Drawing/Animation"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+I used blender to model, rig, and animate the character in a low poly style. I use a physics asset to animate both the tail and the waist apron. I am doing very rough animations becuase I am planning that I might modify the character based on painpoints with the physics assets and just improving the design; I don't love the waist apron with how it intereacts with some animations, like sliding along the ground, where it also doesn't make sense to animate it by hand.
+
+![VolumetricPipelineFlowchart](/assets/Images/UnrealGame/CharacterScreenShot.png){: .default-image .clickable-image}
+
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/Osupl9zYlTg"
+    title="Character Animation"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="project-overview">Character Clone</span>
+    <hr>
+</div>
+
+Currently in my game the player has a clone mechanic, with the idea being that you can utilize your clone to aid you in different actions. Right now the player can use the clone to boost them up when on the ground or in the air. I plan on adding different ways the clone can combo with the players actions such as when they attack.
+
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/tN1dYv9LJkM"
+    title="Character Animation"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+
+**The clone works like this:**
+
+As the player moves they store data to be able to replicate the move, similar to how the save data for networking works. 
+
+{% highlight c++ %}
+USTRUCT(BlueprintType)
+struct FPlayerRecordedFrame
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float speed;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector Location;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FRotator Rotation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector Velocity;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	// Montage info
+	ERecordedMontage MontageID = ERecordedMontage::None;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float MontagePosition = 0.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName CurrentMontageSection = NAME_None;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsFalling = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsHanging = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsPivoting = false;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	bool bIsWallSlide = false;
+};
+{% endhighlight %}
+
+It's not necessary to record every frame, so we record the player's state at regular intervals instead.
+
+For example, we could record a snapshot every 0.02 seconds (50 times per second) rather than recording every game frame. This will often reduce the amount of data we store, which is important because we're maintaining a list of past frames to pass to our clone so it can recreate the player's movements and animations. The longer the recording duration and the more frequently we record, the more snapshots we need to store.
+
+I also have the option for the clone to continue to follow the player's actions after catching up with the history, which you can see and the bottom of the following code. I think this helps to make the clone more useful.
+
+{% highlight c++ %}
+void AZippyCharacter::Tick(float DeltaTime)
+{
+	// Super is a special Unreal-provided alias for the parent class of your current class
+	// this is like call base.Tick() in C#
+	Super::Tick(DeltaTime);
+
+	// So, the following code is for recording our clone. For our clone, we record
+	// on an interval so that we are not constantly recording. We not need a super high
+	// level or prescision.
+	TimeSinceLastRecord += DeltaTime;
+
+	if (TimeSinceLastRecord >= RecordInterval)
+	{
+		TimeSinceLastRecord -= RecordInterval;
+
+		// This is how we built the current frame data for recording.
+		FPlayerRecordedFrame Frame;
+
+		// We can get the location, rotation, and velocity directily from ACharacter
+		Frame.Location = GetActorLocation();
+		Frame.Rotation = GetActorRotation();
+		Frame.Velocity = GetVelocity();
+		
+		// But then we also need to store the player's animation data for whether the clone
+		// should be sliding/jumping/attacking.
+		if (UAnimInstance* AnimInst = GetMesh()->GetAnimInstance())
+		{
+			// the players animation blueprint. We copy and store all of the variables that we need
+			// for determining the animation state.
+			if (UMyPlayerAnimInstance* PlayerAnimBP = Cast<UMyPlayerAnimInstance>(AnimInst))
+			{
+				Frame.bIsFalling   = PlayerAnimBP->bIsFalling;
+				Frame.bIsHanging   = PlayerAnimBP->bIsHanging;
+				Frame.bIsPivoting  = PlayerAnimBP->bIsPivoting;
+				Frame.bIsWallSlide = PlayerAnimBP->bIsWallSlide;
+				Frame.speed        = PlayerAnimBP->speed;
+			}
+			
+			// we use a montage for the attack animation and sliding, so we also want 
+			// to store which section of the montage we are playing. We need motage Id
+			// because our montage mapping contains multiple montages.
+			// Using a montage like this also allows for swapping out the attack animation
+			// if i wanted to use something different for the clone, which I've considered.
+			if (UAnimMontage* Montage = AnimInst->GetCurrentActiveMontage())
+			{
+				Frame.MontageID            = MontageMapping ? MontageMapping->GetEnumForMontage(Montage) : ERecordedMontage::None;
+				Frame.CurrentMontageSection = AnimInst->Montage_GetCurrentSection(Montage);
+				Frame.MontagePosition       = AnimInst->Montage_GetPosition(Montage);
+			}
+		}
+
+		// Always record history
+		PastFrames.Add(Frame);
+		
+
+		// Make it so that we only keep RecordDuration of the history.
+		int32 MaxFrames = FMath::CeilToInt(RecordDuration / RecordInterval);
+		if (PastFrames.Num() > MaxFrames)
+		{
+			PastFrames.RemoveAt(0);
+		}
+		
+
+		// When our clone is active, we want to keep recroding and pushing our frames into
+		//  it for a little extra duration so that it keeps following us instead of strictly
+		// stopping at where we first pressed the button. So, while we haven't reached that extra 
+		// duration, keep pushing our frames into it.
+		if (bCloneRecordingActive && ActiveClone)
+		{
+			ActiveClone->AppendFrame(Frame);
+
+			CloneRecordingTimer += RecordInterval;
+			if (CloneRecordingTimer >= CloneExtraRecordDuration)
+			{
+				bCloneRecordingActive = false;
+				ActiveClone = nullptr;
+			}
+		}
+	}
+}
+{% endhighlight %}
+
+Then when we spawn the clone, we pass the past frame list to the clone and maintain a reference to it in this player. 
+
+{% highlight c++ %}
+void AZippyCharacter::SpawnClone()
+{
+	// If we dont have the clone actor or we dont have any past frames,
+	// dont spawn the clone.
+	if (!PlayerShadowCloneClass || PastFrames.Num() == 0) 
+		return;
+
+	// Start recording window
+	bCloneRecordingActive = true;
+	CloneRecordingTimer = 0.f;
+
+	FVector SpawnLocation = PastFrames[0].Location;
+	FRotator SpawnRotation = PastFrames[0].Rotation;
+
+	// spawn the clone actor at the starting location and rotation
+	ActiveClone = GetWorld()->SpawnActor<APlayerShadowClone>(PlayerShadowCloneClass,
+															 SpawnLocation,
+															 SpawnRotation);
+
+	// If we sucessfully created the Clone, then initalize it.	
+	if (ActiveClone)
+	{
+		ActiveClone->InitOwner(this);
+		ActiveClone->SetOwner(this);   // built-in UE owner
+		ActiveClone->InitReplay(PastFrames);
+	}
+}
+{% endhighlight %}
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="overview">Custom Character Physics</span>
+    <hr>
+</div>
+
+A dreamy, cozy arcade game with magical pixel art, Violet Rush is an arcade-style roguelike rhythm game where you catch arrows to the beat while surviving increasingly demanding challenges. No checkpoints. Performance is rewarded. Earn currency by overcoming each stage, purchase upgrades between levels, and discover unique combinations that change how you play.
+
+Fight your way through a series of handcrafted stages, each set to its own song. Every stage is made up of multiple escalating levels that introduce new mechanics and challenges.
+
+Choose from unique abilities that synergize with your upgrades and complement your playstyle. Time their use carefully to overcome difficult encounters.
+
+Performance is rewarded. Earn currency by overcoming each stage, purchase upgrades between levels, and discover unique combinations that change how you play.
+
+
+<div style="text-align: center;">
+  <a href="https://www.instagram.com/reel/Dd-PInNIP4J/?utm_source=ig_web_copy_link&rpxt=MzRlODBiNWFlZA==&srtk=MzRlODBiNWFlZA==" target="_blank" rel="noopener noreferrer">
+    <img
+      class="post-card-image-small"
+      src="/assets/images/VioletRush/ChallengeScreenShot_3.png"
+      alt="Watch Violet Rush gameplay video on Instagram"
+      style="width: 100%; max-width: 800px; height: auto;"
+    >
+  </a>
+</div>
+
+<div style="text-align: center;">
+<p></p>
+<p>Watch the video on Instagram ↗</p>
+</div>
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="core-gameplay">Core Gameplay</span>
+    <hr>
+</div>
+
+**Core Mechanics:** 
+
+* **Rythm-based Arrow Catching:** Rotating a paddle to catch arrows mapped to different songs
+* **Challenge Navigation:** Jumping and sometimes using other input actions to navigate obstacles/challenges
+* **Roguelike Progression:** Collecting currency, obtaining upgrades and creating a build
+
+**Player Actions:**
+
+The player's primary action is rotating their paddle with the W, A, S, D, or arrow keys to catch incoming arrows. Each song consits of arrow patterns and challenges, and different stages may have different input for their challenge/obstacle sections, but the primary input is to jump.
+
+Between levels, the player has the oppurtunity to spend currency on upgrades to shape a build for the rest of the run.
+
+The player also chooses run modifiers before starting a run, which can help you mitigate a pain point, change how you play, or even increase the difficulty.
+
+**Main Challenges:**
+
+Given the nature of the genre, the main challenge is that there are no save points. 
+* A "stage" in the game is comprised of multiple levels and then a boss level which introduces a new mechanic. 
+* Each stage also introduces a new arrow type, which contributes to an increasing level of difficulty as the player progresses. 
+* Challenges also escelate in diffoculty as the stage progresses.
+
+**Win/Loss Conditions:** 
+
+* Since the game is a roguelike, the player has to beat the game in one attempt by completeting all of the stages.
+* For each level, we also reward the player for their performance. Poor performance can result in you getting less resoruces, which can change which upgrades you choose.
+
+**Reward System:** 
+
+After each level the player is presented with different reward routes that they can choose from. The player selects one option per level. The primary shop reward allows you to choose from cards that a drawn based on a weight system that tries to make sure that there is always at least one useful option availiable. As mentioned before, the player is also rewarded with currency when they complete the level. The reward is comprised of a base reward and additional rewards based on their performance for the level.
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="design-work">Design Work</span>
+    <hr>
+</div>
+
+In my game, I have a variety of upgrades with different effects, from blocking damage or healing to introducing new arrow types and effects that destroy arrows.
+
+For my upgrade system, we have **three possible lifetimes**
+
+* **Temporary:** Upgrade should only last for the next level
+    - _Example:_ A temporary discount
+* **Renewing:**Upgrade needs to be readded at the start of each level.
+    - _Example:_ Effect that should only be triggered once per level
+* **Permanent** should last forever
+    - _Example:_ Permanently altering some variable
+
+The `RuntimeModifierManager` abstract class shown below is a way to store and manage the lifecycle of these 3 ways that upgrades work without having to define it for each class.   
+
+In my game, we can divide upgrades into groups based on the **events they respond to**. Fore example, multiple upgrades that prevent damage need to know when the player is about to take damage.
+
+The child class of `RuntimeModifierManager` will typically listen to one event. When the event occurs, it will loop through each of the active modifiers and ask if they should active.
+
+
+<div class="padded-code-block">
+{% highlight csharp %}
+public abstract class RuntimeModifierManager<TModifier> : MonoBehaviour where TModifier : 
+                                                          class, IRuntimeModifier
+{
+    protected readonly List<RuntimeModifierEntry<TModifier>> activeModifiers = new();
+    protected readonly List<RuntimeModifierEntry<TModifier>> renewingModifiers = new();
+    protected readonly List<RuntimeModifierEntry<TModifier>> permanentModifiers = new();
+
+    private bool _initialized;
+
+
+    private void HandleStateChanged(GameState previousState,GameState newState)
+    {
+        if (newState == GameStateManager.LevelStartState)
+        {
+            RestoreRenewingModifiers();
+        }
+
+        if (newState == GameStateManager.LevelEndState)
+        {
+            RemoveTemporaryModifiers();
+        }
+
+        OnGameStateChanged(previousState, newState);
+
+        if(newState == GameState.DeathSequence)
+        {
+            ClearAllModifiers();
+        }
+    }
+
+
+    /// <summary>
+    /// Adds a temporary modifier that is removed at level end.
+    /// Its inventory card is also removed when it expires.
+    /// </summary>
+    public virtual void Register(TModifier modifier,UpgradeBase sourceUpgrade)
+    {
+        if (modifier == null)
+            return;
+
+        Initialize();
+
+        RuntimeModifierEntry<TModifier> entry =
+            new RuntimeModifierEntry<TModifier>(
+                modifier,
+                sourceUpgrade,
+                removeCardWhenExpired: true
+            );
+
+        AddActiveModifier(entry);
+    }
+
+    /// <summary>
+    /// Adds a modifier template that creates a fresh active modifier
+    /// at the beginning of each level.
+    /// Its inventory card remains between levels.
+    /// </summary>
+    public virtual void RegisterRenewing(TModifier modifier,UpgradeBase sourceUpgrade)
+    {
+        if (modifier == null)
+            return;
+
+        Initialize();
+
+        RuntimeModifierEntry<TModifier> entry =
+            new RuntimeModifierEntry<TModifier>(
+                modifier,
+                sourceUpgrade,
+                removeCardWhenExpired: false
+            );
+
+        renewingModifiers.Add(entry);
+    }
+
+    /// <summary>
+    /// Adds a modifier immediately and keeps it active between levels.
+    /// Its inventory card remains.
+    /// </summary>
+    public virtual void RegisterPermanent(TModifier modifier,UpgradeBase sourceUpgrade = null)
+    {
+        if (modifier == null)
+            return;
+
+        Initialize();
+
+        RuntimeModifierEntry<TModifier> entry =
+            new RuntimeModifierEntry<TModifier>(
+                modifier,
+                sourceUpgrade,
+                removeCardWhenExpired: false
+            );
+
+        permanentModifiers.Add(entry);
+        AddActiveModifier(entry);
+    }
+
+    /// <summary>
+    /// This is how the modifier actually gets added to the activeModifiers. When
+    /// a modifier is activated we call its OnActivate(). Use OnActivte() as essentially
+    /// a start function.
+    /// </summary>
+    protected virtual void AddActiveModifier(RuntimeModifierEntry<TModifier> entry)
+    {
+        if (entry == null || entry.Modifier == null)
+            return;
+
+        activeModifiers.Add(entry);
+
+        OnModifierActivated(entry.Modifier);
+
+        entry.Modifier.OnActivate();
+
+        SortActiveModifiers();
+    }
+
+    // Renewing & removing modfiers...
+
+    // Modifier lifecycle...
+
+    // Cleanup and lifecycle...
+}
+{% endhighlight %}
+</div>
+
+
+<a href="{{ '/assets/files/RMM.cs' | relative_url }}" download>
+    Full Implementation
+</a>
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="tools">Tools</span>
+    <hr>
+</div>
+
+**Overview**
+
+For my game, building a level editor was necessary. My process for the level editor was to implement new features as I discovered pain points when creating levels.
+
+For example, I have developed soft pattern presets overtime through trial and error with experiementing with new patterns, that I think feel fun and interesting.
+
+When placing arrows in a level, I often need to check surrounding arrows to check whether the patterns were in line with my soft presets, so I added a details button to be able to view all of the arrow directions above their respective marker.
+
+**Level Events**
+
+There are currently **three types of level events**:
+* **Arrow Event:** The basic arrow note
+* **Challenge Event:** A section of the song where the player swaps control mode and dodges obstacles
+* **Pattern Block Event:** A block of fixed length that will be swapped for a random pattern from a database
+
+Arrow events are simulated in the level editor to give immediate feedback on adding or editing arrows. This allows you to simulate patterns without having to play the level file.
+
+Pattern blocks and challenges appear as markers on the timeline, but aren't simulated in the editor. It would be helpful to simulate challenges and patterns within the level editor, but both of them present problems that are difficult to solve.
+
+
+**Core functionality**
+
+My level editor currently has the following features:
+
+* **Box Select and Multi-selecting:** lets you move multiple timeline events together, which is especially useful for moving blocks of the song around when trying to position challenge events.
+* **Looping Tool:** used to repeatedly test a short section of the song to fine-tune timing and patterns.
+* **Details Tool:** used to view the direction for arrow events. For implementing patterns, its really helpful to be able to see the directions of surrounding arrows to avoid having to scrub back and forth.
+* **Add & Edit Event Tool:** add arrow, challenge, or pattern blocks. Select the marker in the timeline to edit the current marker. 
+* **Timeline Playback, Scrubbing, and Zoom:** timeline playback supports playing the song's arrow events directly in the editor without having to play the level file in the game scene. The scrubbing and the timeline zoom feature allows for percise timing adjustments and pattern editing throughout the level file.
+* **Undo/Redo Stack:** undoing and redoing actions such as moving an event marker, or editing and adding an event. This tool lets you quickly reverse or re-apply actions which makes testing and experiementing with changes less of a pain point.
+
+
+The workflow looks like for creating a new level:
+
+* **Select a level and music file:** select a level file and the associated music file, then set the target bpm.
+* **Plan out:** develop a general idea of where to place challenge sections in the song by scrubbing the music.
+* **Build the level timeline:** work from the start to the end of the song adding arrow event markers to create patterns. While doing that, use the scrub tool and play the level section to briefly check the newly added patterns.
+* **Fine-tuning:** go back and use the scrub, loop, and edit tool to fine-tune timing and patterns. Test changes by playing the level.
+* **Implement pattern blocks:** find sections of the song that can be replaced by a preset pattern. This usually is during breaks in the song. Im still working on this system.
+
+
+**Level Editor Demsonstration:**
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/-w3GtXw5xBU"
+    title="Violet Rush Level Editor Demonstration"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+
+**Technical implementation**
+
+As mentioned previously, there are three types of events: each is stored on an individual line in a text file. The following is a snipit from one level file.
+
+<div class="padded-code-block">
+{% highlight text %}
+# Saved by Level Editor
+# BPM: 90
+
+(ARROWS EXAMPLE)
+4,arrow,right,6.5,normalarrow
+5,arrow,left,6.5,normalarrow
+5.5,arrow,right,6.5,normalarrow
+6,arrow,down,6.5,normalarrow
+6.25,arrow,up,6.5,normalarrow
+6.5,arrow,left,6.5,normalarrow
+
+(CHALLENGE EXAMPLE)
+34,obstacle,simplelanedodger...
+
+(PATTERN EXAMPLE)
+50,pattern,easy,2,6...
+{% endhighlight %}
+
+<div class="custom-image-description">
+Arrow line is read as: beat number, entry type, arrow direction, arrow speed, arrow type
+</div>
+</div>
+
+The level editor reads each of the events when loading a file; for arrows, we create an editor version that can be simulated by a script controlling the editor's song time.
+
+**Undo**
+
+For each editor action, I create a command that contains methods to execute and undo the action. I use a stack to keep track of these commands, so when the user presses the undo button, the most recent command is popped from the stack and its undo method is called.
+
+<div class="padded-code-block">
+{% highlight csharp %}
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class EditorHistory : MonoBehaviour
+{
+    public static event Action OnUndo;
+    public static EditorHistory Instance { get; private set; }
+
+    private readonly Stack<IEditorCommand> undoStack = new();
+
+
+    public void Execute(IEditorCommand command)
+    {
+        command.Execute();
+
+        undoStack.Push(command);
+    }
+
+    public void Undo()
+    {
+        if (undoStack.Count == 0)
+            return;
+
+        AudioHelpers.PlaySoundEffect(AudioLibrary.Instance.Database.back, Camera.main.transform.position);
+
+        IEditorCommand command = undoStack.Pop();
+
+        command.Undo();
+
+        redoStack.Push(command);
+
+        OnUndo?.Invoke();
+    }
+
+    public void Clear()
+    {
+        undoStack.Clear();
+    }
+
+    private void Update()
+    {
+        bool ctrlHeld = Keyboard.current.leftCtrlKey.isPressed ||
+                        Keyboard.current.rightCtrlKey.isPressed;
+
+        if (ctrlHeld && Keyboard.current.zKey.wasPressedThisFrame)
+        {
+            Undo();
+        }
+    }
+}
+{% endhighlight %}
+</div>
+
+For example, when adding an event, I add the event to `LevelEditorData`, which contains the list of level events. The list contains all of the events loaded from the level file, and whatever we have added during the current editor session. When undoing the action, the command removes the event from the list and refreshes the necessary components to reflect the change.
+
+<div class="padded-code-block">
+{% highlight csharp %}
+using UnityEngine;
+
+public class AddEventCommand : IEditorCommand
+{
+    private LevelEventData data;
+
+    public AddEventCommand(LevelEventData data)
+    {
+        this.data = data;
+    }
+    public void Execute()
+    {
+        LevelEditorData.Instance.AddEvent(data);
+    }
+
+    public void Undo()
+    {
+        LevelEditorData.Instance.RemoveEvent(data);
+        LevelTimelineUI.Instance.BuildTimeline();
+        EditorPlaybackController.Instance.RebuildSimulation();
+    }
+}
+{% endhighlight %}
+</div>
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="challenges">Design Challenges & Solutions</span>
+    <hr>
+</div>
+
+
+**Upgrade Design**
+
+I spent a lot of time figuring out how to design upgrades for the game. Initally i was struggling with which variables that upgrades influenced. At first, I wanted the primary indicator of successs to be the players score, so I was designing upgrades around increasing the players score.
+
+Through a couple playtests, I quickly moved away from this design because the effects of upgrades didn't feel
+visible, and it was very challenging to try and come up with a way in which upgrades felt impactful.
+
+Instead I made the primary success access just how far you make it in the game, with score being a secondary axis that the player doesn't focus on outside of trying to achieve the highest score posible for a leaderboard position.
+
+**This was my thought process for how defensive upgrades should work.**
+
+<div class="post-boxes">
+    <div class="post-box">
+        <div class="post-card-content">
+        <h3 class="post-card-title">Conditional</h3>
+        <p class="post-box-description">
+        A defensive reward should require that the player first overcome a meaningful risk. 
+            </p>
+            <ul>
+                <li>
+                Defensive rewards reduce punishment as the player is allowed to make more mistakes with more health. 
+                </li>
+                <li>
+                If we reduce punishment before the player shows mastery, then the player isn’t required to master anything, which reduces tension and creates some balance issues by reducing difficulty.
+                </li> 
+                <li>
+                By using conditions like difficulty, performance requirements, or success, we can keep the player feeling like they earned protection rather than it just being granted for free.
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="post-boxes">
+    <div class="post-box">
+        <div class="post-card-content">
+        <h3 class="post-card-title">Capped</h3>
+        <p class="post-box-description">
+        Defensive rewards scale with player skill as skilled players make fewer mistakes, so each unit of defense lasts longer and effectively makes them tankier than a less skilled player. Therefore, defensive rewards need to be capped to avoid trivializing the game.
+            </p>
+        </div>
+    </div>
+</div>
+
+
+<div class="post-boxes" id="convertable">
+    <div class="post-box">
+        <div class="post-card-content">
+        <h3 class="post-card-title">Convertible</h3>
+        <p class="post-box-description">
+        It is important for defensive rewards to be convertible since skilled players are less likley to need need defensive rewards. To avoid giving the player no reward entirely, we should instead give highly skilled players an alternative reward to still give them meaningful value.
+            </p>
+        </div>
+    </div>
+</div>
+
+Now through actual playtesting, I found that the player was coninously struggling to survive, feeling like they didn't have enough healing or ways to avoid damage, or none of the availible cards felt useful. So, while in theory its better to use conditions like difficulty, performance requirements, or success, its still important to present the player with options that provide immediate value, like increasing the duration of shields that prevent damage.
+
+I've also been working on implementing upgrades that focus on benefiting struggling players while providing less value for more skilled players, keeping in mind the reasons above. For example, one upgrade heals 1 health the first time your health drops below half each level. This provides additional support to players who are struggling to survive, while offering little to no benefit to players who consistently maintain higher health.
+
+**Syncing Notes**
+
+Its extremely important for a rythem game that arrows match the song time, so arrows can't be controlled by physics, or be mapped to game time becuase frame rate issues can cause minor offsets from the music. Instead the arrows have to mapped to the audio settings DSP time, which runs on a seperate pipeline than how graphics are rendered tied to the audio, and the position has to be lerped directly. It took me a while to figure this out.
+
+{% highlight csharp %}
+protected virtual void Update()
+{
+    // Get elapsed DSP time
+    float elapsed = (float)MusicManager.Instance.ScaledElapsedTime;
+
+    Vector2 targetPos;
+
+    
+    if (elapsed <= _arrivalTime)
+    {
+        // Normal movement to goal
+        float t = Mathf.InverseLerp(_spawnTime, _arrivalTime, elapsed);
+        targetPos = Vector2.Lerp(_startPos, _endPos, t);
+    }
+    else
+    {
+        // AFTER goal → continue to center
+        float extraTime = elapsed - _arrivalTime;
+
+        float postTravelDuration = 0.2f;
+
+        float t = Mathf.Clamp01(extraTime / postTravelDuration);
+
+        targetPos = Vector2.Lerp(_endPos, Vector2.zero, t);
+    }
+
+    SmoothTranslate(targetPos);
+}
+
+protected void SmoothTranslate(Vector3 targetPos)
+{
+    // frame rate independent interpolation
+    // Mathf.Exp(-20f * Time.deltaTime) comes from grabing a function where
+    // we start with dd/dt = -20d where we have a function where speed is proportional to distance.
+    // Then, integrate both sides and end up with e^-20 dt
+
+    // the fraction of the distance remaining
+    float d = Mathf.Exp(-20f * Time.deltaTime);
+
+    // Smooth movement toward correct DSP position
+    // // the fraction of the distance to move.
+    transform.localPosition = Vector2.Lerp(transform.localPosition,targetPos,1f - d);
+}
+{% endhighlight %}
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="playtesting">Playtesting & Iteration</span>
+    <hr>
+</div>
+
+**Here is an example playtest form:**
+
+<iframe src="/assets/PDFs/ExamplePlaytestPDF.pdf" width="100%" height="600px"></iframe>
+
+[Download/View the Example Playtest PDF](/assets/PDFs/ExamplePlaytestPDF.pdf)
+
+One challenge that I am working through is how to balance playtest forms for the entire audience, while accounting for the differences in players' familiarity with the game. I'm trying to figure out which questions to include for first time experiences, while keeping questions focused enough to still get meaningful feedback. Here is how I would describe the audience:
+
+* people who haven't played the game before
+* people who have played before but didn't play the previous playtest
+* people who played the previous playtest 
+
+In addition, I feel I make more changes than I should between playtests, which is something that I could improve upon. For a while I struggled with getting people to playtest, so I had to make them less frequent with more changes. 
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="visuals">Visual Development & Polish</span>
+    <hr>
+</div>
+
+My game is primarily simple pixel art, but I do use full screen effects for menu transitions and retro filters, along with visual effects.
+
+**UI Transitions Demonstration:**
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/-NEbdCTSqSU"
+    title="Violet Rush UI Transition Demonstration"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+This is what early UI and gameplay looked like
+
+<div class="video-container">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/4cn9jdW3psk"
+    title="Violet Rush Early UI & Gameplay"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
+
+I went through several iterations of the UI as I developed new features, gradually refining the visual direction to better match my intended aesthetic. Inspired by _Bee and PuppyCat_, I wanted the interface to feel like something that could exist within its world. This eventually led me to use the 
+[arcade machines within that world](https://www.google.com/search?q=bee+and+puppycat+arcade&rlz=1C1RXQR_enUS1128US1128&oq=bee+and+puppycat+arcade&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yCAgCEAAYFhgeMggIAxAAGBYYHjIICAQQABgWGB4yCAgFEAAYFhgeMg0IBhAAGIYDGIAEGIoFMg0IBxAAGIYDGIAEGIoFMgcICBAAGO8F0gEHNzQ4ajBqOagCBrACAfEFoxDn6UFjBls&sourceid=chrome&source=chrome.ob&ie=UTF-8) 
+as a reference point.
+
+I changed my approach towards trying to design the UI as if it were part of a physical machine, with the center area acting as the arcade screen. I think this helped to establish more of a cohesive identity, which you can see in the newer gamplay footage/demo.
+
+However, this approach makes designing the center UI more difficult due to the limited space because of the physical arcade machine layout. I eventually found a solution utilizing multiple connected panels, which distribute the information across multiple pages that flow together; you can see in the UI Transitions Demonstration video above.
+
+I also iterated on the UI's interaction feedback, using the tilting and movement in response to player input to make the UI feel more responsive. During playtesting I specifically asked for feedback on how responsive the UI felt. I evetually designed a template panel, which I reuse throughout the game to help make development faster and to maintain consistency.
+
+
+
+**Designing Upgrades**
+
+My process for implementing upgrade UI is to try and come up with name ideas that can be represented by a distinct icon, often avoiding ideas that name the upgrade based on the result it produces; otherwise, I end up with a bunch of very similar icons because a multiple upgrades share a similar purpose (for example, upgrades that heal you). So, for many of the upgrades I end up with a name that is more symbolic.
+
+I then will try and come up with a basic design for the icon given the name. Sometimes I have to change the name, because the icon silhoette doesnt work; think designs that end up being like a bulky square or circle. After testing the upgrade to makes sure that it works, I then try and create a more polished icon, unless I just have the extra time. 
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+  <div>
+    <img src="/assets/Images/VioletRush/UnpolishedDesignExample.png" class="default-image clickable-image" />
+  </div>
+
+  <div>
+    <img src="/assets/Images/VioletRush/PolishedDesignExample.png" class="default-image clickable-image" />
+  </div>
+</div>
+
+**Return Policy:** When a shield expires without breaking, gain currency.
+
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+ <div>
+    <img src="/assets/Images/VioletRush/UnpolishedDesignExample2.png" class="default-image clickable-image" />
+  </div>
+
+  <div>
+    <img src="/assets/Images/VioletRush/PolishedDesignExample2.png" class="default-image clickable-image" />
+  </div>
+</div>
+
+**Deep Pockets:** The first time you would take damage each level, lose currency instead.
+
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="demo">Demo</span>
+    <hr>
+</div>
+
+
+
+<iframe 
+  src="https://itch.io/embed-upload/19981888?color=333333" 
+  width="990px"
+  height="700px" 
+  style="aspect-ratio: 1920 / 1080; border: none;"
+  allow="pointer-lock" 
+  allowfullscreen>
+  <a href="https://emmyvoita.itch.io/violet-rush">Play Violet Rush on itch.io</a>
+</iframe>
+
+Just to note, the visual effects don't work on a web build because they use compute shaders. Also, if the game is laggy, you might have to enable graphics acceleration on your browser. And if the embed doesn't work, you can also download the files from [DropBox](https://www.dropbox.com/scl/fi/mab6opvrhhm05igw88z6w/VioletRush_10-10-2026_Playtest_2.zip?rlkey=kge2v8nd1lio8bvsku9i3lc52&st=41w5hr6r&dl=0).
+
+
+<div class="reusable-divider">
+    <span class="small-header-text" id="links">LINKS</span>
+    <hr>
+</div>
+
+
+1. [In-Depth Character Movement Component Guide by Delgoodie](https://www.youtube.com/watch?v=dOkuIvKCvpg&list=PLXJlkahwiwPmeABEhjwIALvxRSZkzoQpk&index=2){: #CustomCharacterMovementComponent}
+
